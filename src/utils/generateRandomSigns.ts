@@ -1,23 +1,40 @@
-import Sign from './Sign';
-
-export default function generateRandomCode(length: number = 0): Sign[] {
-    const randomSigns: String[] = Math
+function generateRandomLetters(length: number = 0): string[] {
+    const randomSigns: string[] = Math
         .random()
         .toString(36)
         .slice(2, length + 2)
         .split('');
 
-    let all = 100;
-    const randomPercentages = Array.from({length}, () =>  {
-        const random = Math.floor(Math.random() * 100 / 4);
-        all -= random;
-        return all < 0 ? 14 : random;
+    return randomSigns;
+}
+
+interface Signs {
+    stats: {
+        length: number
+    };
+}
+
+function mapLettersToSigns(signs: string[] = []): Signs {
+    let mappedSigns: Signs = {
+        stats: {
+            length: signs.length
+        }
+    };
+
+    signs.forEach(sign => {
+        if (mappedSigns[sign]) {
+            mappedSigns[sign].count = mappedSigns[sign].count + 1;
+        } else {
+            mappedSigns[sign] = { count: 1 };
+        }
     });
 
-    // Sum of percentages needs to be validaded to be 100 -> last element sums rest
-    const percentagesSum = randomPercentages.reduce( (prev, next) => prev + next);
-    if ( percentagesSum < 100) {
-        randomPercentages[randomPercentages.length - 1] += 100 - percentagesSum;
-    }
-    return randomSigns.map( (sign: string, index: number) => new Sign(sign, randomPercentages[index]));
+    return mappedSigns;
+}
+
+export default function generateRandomSigns(length: number = 0): Object {
+    const signs: string[] = generateRandomLetters(length);
+
+    const finalSigns = mapLettersToSigns(signs);
+    return finalSigns;
 }

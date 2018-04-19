@@ -1,32 +1,38 @@
 import Sign from './Sign';
-import generateRandomCode from './generateRandomSigns';
+import generateRandomSigns from './generateRandomSigns';
+import GraphNode from './GraphNode';
 
 class HuffmanCoding {
+    initialData: Object;
     data: Sign[];
     root: GraphNode;
 
-    constructor(data: Sign[] = generateRandomCode(5)) {
-        this.data = data;
+    constructor(initialData: Object = generateRandomSigns(5)) {
+        this.initialData = initialData;
+        // this.data = data.map(this.mapSignToGraphNode);
         console.info('creating new coding with: ', this.data);
+        // this.createRootNode(this.data[0]);
+        console.log(this);
+    }
+
+    mapSignToGraphNode (sign: Sign): GraphNode {
+
+        return new GraphNode();
     }
 
     createRootNode(node: GraphNode) {
         this.root = node;
     }
 
+    addNodeToGraph(node: GraphNode) {
+        // @TODO: create huffman here ;)
+    }
+
+    codeAllData() {
+        console.log('hello');
+    }
+
     // first: symbols and their probabilities
     //
 }
-
-class GraphNode {
-    parent?: GraphNode;
-    children?: GraphNode[];
-    sign?: string;
-    constructor(parent: GraphNode, children: GraphNode[], sign: string) {
-        this.parent = parent;
-        this.children = children;
-        this.sign = sign;
-    }
-}
-
 export default HuffmanCoding;
