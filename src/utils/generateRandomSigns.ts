@@ -1,3 +1,5 @@
+import Signs from "../interfaces/Signs";
+
 function generateRandomLetters(length: number = 0): string[] {
     const randomSigns: string[] = Math
         .random()
@@ -8,17 +10,12 @@ function generateRandomLetters(length: number = 0): string[] {
     return randomSigns;
 }
 
-interface Signs {
-    stats: {
-        length: number
-    };
-}
-
 function mapLettersToSigns(signs: string[] = []): Signs {
     let mappedSigns: Signs = {
         stats: {
             length: signs.length
-        }
+        },
+        signs
     };
 
     signs.forEach(sign => {
@@ -32,7 +29,7 @@ function mapLettersToSigns(signs: string[] = []): Signs {
     return mappedSigns;
 }
 
-export default function generateRandomSigns(length: number = 0): Object {
+export default function generateRandomSigns(length: number = 0): Signs {
     const signs: string[] = generateRandomLetters(length);
 
     const finalSigns = mapLettersToSigns(signs);
