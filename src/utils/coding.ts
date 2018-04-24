@@ -6,6 +6,7 @@ import Signs from '../interfaces/Signs';
 class HuffmanCoding {
     initialData: Signs;
     dataSigns: Sign[];
+    graphNodes: GraphNode[];
     root: GraphNode;
 
     constructor(initialData: Signs = generateRandomSigns(10)) {
@@ -15,7 +16,7 @@ class HuffmanCoding {
             .sort()
             .filter( (el, index) => !index || el !== initialData.signs[index - 1]) // dirty done - get only unique ones
             .map(this.mapStringToSign);
-        // this.createRootNode(this.data[0]);
+        this.graphNodes = this.dataSigns.map(this.mapSignToGraphNode);
     }
 
     mapStringToSign = (sign: string): Sign => {
@@ -23,7 +24,7 @@ class HuffmanCoding {
     }
 
     mapSignToGraphNode = (sign: Sign): GraphNode => {
-        return new GraphNode();
+        return new GraphNode(sign);
     }
 
     createRootNode = (node: GraphNode) => {
