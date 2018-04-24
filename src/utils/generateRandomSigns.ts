@@ -1,4 +1,4 @@
-import Signs from "../interfaces/Signs";
+import Signs from '../interfaces/Signs';
 
 function generateRandomLetters(length: number = 0): string[] {
     const randomSigns: string[] = Math

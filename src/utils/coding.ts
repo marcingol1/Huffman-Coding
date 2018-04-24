@@ -5,32 +5,41 @@ import Signs from '../interfaces/Signs';
 
 class HuffmanCoding {
     initialData: Signs;
-    data: Sign[];
+    dataSigns: Sign[];
     root: GraphNode;
 
-    constructor(initialData: Signs = generateRandomSigns(5)) {
+    constructor(initialData: Signs = generateRandomSigns(10)) {
         this.initialData = initialData;
-        // this.data = initialData.signs.map(this.mapSignToGraphNode);
+        this.dataSigns = initialData
+            .signs
+            .sort()
+            .filter( (el, index) => !index || el !== initialData.signs[index - 1]) // dirty done - get only unique ones
+            .map(this.mapStringToSign);
         // this.createRootNode(this.data[0]);
     }
 
-    mapSignToGraphNode (signs: Sign): GraphNode {
+    mapStringToSign = (sign: string): Sign => {
+        return new Sign(sign, this.initialData[sign].count / this.initialData.stats.length);
+    }
+
+    mapSignToGraphNode = (sign: Sign): GraphNode => {
         return new GraphNode();
     }
 
-    createRootNode(node: GraphNode) {
+    createRootNode = (node: GraphNode) => {
         this.root = node;
     }
 
-    addNodeToGraph(node: GraphNode) {
+    addNodeToGraph = (node: GraphNode) => {
         // @TODO: create huffman here ;)
     }
 
-    codeAllData() {
-        console.log('hello');
+    createGraph = (signs: Sign[]): void => {
+        signs.forEach(this.mapSignToGraphNode);
     }
 
     // first: symbols and their probabilities
     //
 }
+
 export default HuffmanCoding;
