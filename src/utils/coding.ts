@@ -29,18 +29,20 @@ class HuffmanCoding {
         return new GraphNode(sign);
     }
 
-    createNewRootNode = () => {
-        // Get two least probable nodes (and delete them from this.graphNodes)
-
+    createNewRootNode = (root: GraphNode) => {
         // Create new graph node with no sign
+        const rightNode: GraphNode = this.graphNodes
+            .reduce( (prev, next) => {
+                return next.sign.p < prev.sign.p ? next : prev;
+            });
+        this.graphNodes = this.graphNodes.filter( filter => filter !== rightNode);
 
         // Add their propabilities and insert it to graph's sign's p
-
-        // Add left node
-
-        // Add right node
+        const rootSign = new Sign('', root.sign.p + rightNode.sign.p);
+        const rootNode = new GraphNode(rootSign, root, rightNode);
 
         // Overwrite root node
+        this.root = rootNode;
     }
 
     mergeNodes = (node: GraphNode) => {
@@ -62,7 +64,20 @@ class HuffmanCoding {
     }
 
     createGraph = (): void => {
-        console.log(this.dataSigns, this.graphNodes);
+        // Get two least probable nodes (and delete them from this.graphNodes)
+        const rootNode: GraphNode = this.graphNodes
+            .reduce( (prev, next) => {
+                return next.sign.p < prev.sign.p ? next : prev;
+            });
+        this.graphNodes = this.graphNodes.filter( filter => filter !== rootNode);
+        this.root = rootNode;
+
+        this.createNewRootNode(this.root);
+        console.log(this);
+        this.graphNodes.forEach( graphNode => {
+            this.createNewRootNode(this.root);
+        });
+
     }
 
     // first: symbols and their probabilities

@@ -4,12 +4,12 @@ export default class GraphNode {
     parent?: GraphNode;
     leftLeaf?: GraphNode;
     rightLeaf?: GraphNode;
-    sign?: Sign;
+    sign: Sign;
 
-    constructor(sign?: Sign,
-                parent?: GraphNode,
+    constructor(sign: Sign,
                 leftLeaf?: GraphNode,
-                rightLeaf?: GraphNode) {
+                rightLeaf?: GraphNode,
+                parent?: GraphNode) {
 
         this.sign = sign;
         this.parent = parent;
