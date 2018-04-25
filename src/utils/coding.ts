@@ -17,6 +17,8 @@ class HuffmanCoding {
             .filter( (el, index) => !index || el !== initialData.signs[index - 1]) // dirty done - get only unique ones
             .map(this.mapStringToSign);
         this.graphNodes = this.dataSigns.map(this.mapSignToGraphNode);
+
+        this.createGraph();
     }
 
     mapStringToSign = (sign: string): Sign => {
@@ -27,16 +29,40 @@ class HuffmanCoding {
         return new GraphNode(sign);
     }
 
-    createRootNode = (node: GraphNode) => {
-        this.root = node;
+    createNewRootNode = () => {
+        // Get two least probable nodes (and delete them from this.graphNodes)
+
+        // Create new graph node with no sign
+
+        // Add their propabilities and insert it to graph's sign's p
+
+        // Add left node
+
+        // Add right node
+
+        // Overwrite root node
     }
 
-    addNodeToGraph = (node: GraphNode) => {
+    mergeNodes = (node: GraphNode) => {
         // @TODO: create huffman here ;)
     }
 
-    createGraph = (signs: Sign[]): void => {
-        signs.forEach(this.mapSignToGraphNode);
+    attachNodeLeft = (rootNode: GraphNode, childrenNode: GraphNode): GraphNode => {
+        rootNode.leftLeaf = childrenNode;
+        childrenNode.parent = rootNode;
+
+        return rootNode;
+    }
+
+    attachNodeRight = (rootNode: GraphNode, childrenNode: GraphNode): GraphNode => {
+        rootNode.rightLeaf = childrenNode;
+        childrenNode.parent = rootNode;
+
+        return rootNode;
+    }
+
+    createGraph = (): void => {
+        console.log(this.dataSigns, this.graphNodes);
     }
 
     // first: symbols and their probabilities

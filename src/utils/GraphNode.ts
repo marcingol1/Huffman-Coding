@@ -2,12 +2,19 @@ import Sign from './Sign';
 
 export default class GraphNode {
     parent?: GraphNode;
-    children?: GraphNode[];
-    sign: Sign;
-    constructor(sign: Sign, parent?: GraphNode, children?: GraphNode[]) {
-        this.sign = sign;
+    leftLeaf?: GraphNode;
+    rightLeaf?: GraphNode;
+    sign?: Sign;
 
+    constructor(sign?: Sign,
+                parent?: GraphNode,
+                leftLeaf?: GraphNode,
+                rightLeaf?: GraphNode) {
+
+        this.sign = sign;
         this.parent = parent;
-        this.children = children;
+
+        this.leftLeaf = leftLeaf;
+        this.rightLeaf = rightLeaf;
     }
 }
