@@ -43,7 +43,7 @@ class HuffmanCoding {
         return [this.mapGraphNodeToSerializedData(this.root)];
     }
 
-    constructor(initialData: Signs = generateRandomSigns(10)) {
+    constructor(initialData: Signs = generateRandomSigns('asdasdasdasd')) {
         this.initialData = initialData;
         this.dataSigns = initialData
             .signs
@@ -81,10 +81,6 @@ class HuffmanCoding {
         this.root = rootNode;
     }
 
-    mergeNodes = (node: GraphNode) => {
-        // @TODO: create huffman here ;)
-    }
-
     attachNodeLeft = (rootNode: GraphNode, childrenNode: GraphNode): GraphNode => {
         rootNode.leftLeaf = childrenNode;
         childrenNode.parent = rootNode;
@@ -114,9 +110,6 @@ class HuffmanCoding {
         });
 
     }
-
-    // first: symbols and their probabilities
-    //
 }
 
 export default HuffmanCoding;

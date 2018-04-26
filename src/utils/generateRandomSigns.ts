@@ -1,11 +1,10 @@
 import Signs from '../interfaces/Signs';
 
-function generateRandomLetters(length: number = 0): string[] {
-    const randomSigns: string[] = Math
+function generateRandomLetters(length: number = 0): string {
+    const randomSigns: string = Math
         .random()
         .toString(36)
-        .slice(2, length + 2)
-        .split('');
+        .slice(2, length + 2);
 
     return randomSigns;
 }
@@ -29,9 +28,7 @@ function mapLettersToSigns(signs: string[] = []): Signs {
     return mappedSigns;
 }
 
-export default function generateRandomSigns(length: number = 0): Signs {
-    const signs: string[] = generateRandomLetters(length);
-
-    const finalSigns = mapLettersToSigns(signs);
-    return finalSigns;
+export default function generateRandomSigns(randomLetters: string = generateRandomLetters(5)): Signs {
+    const randomLettersArray = randomLetters.split('');
+    return mapLettersToSigns(randomLettersArray);
 }
