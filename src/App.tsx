@@ -1,14 +1,14 @@
 import * as React from 'react';
 import './App.css';
 import HuffmanCoding from './utils/coding';
+import HuffmanTree from './components/HuffmanTree';
 
 class App extends React.Component {
   render() {
-    const a = new HuffmanCoding();
-    console.log(a);
+    const huffmanCode = new HuffmanCoding();
     return (
       <div className="App">
-          Hello world!
+        <HuffmanTree huffmanCode={huffmanCode} />
       </div>
     );
   }
