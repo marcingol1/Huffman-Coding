@@ -30,14 +30,14 @@ class HuffmanTree extends React.Component<Props> {
     ];
 
     render() {
-        console.log(this.props.huffmanCode);
         return (
             <div id="treeWrapper">
                 <h3>Admire this random tree!</h3>
                 <Tree
                     translate={{x: 300, y: 100}}
-                    data={this.initialTree}
+                    data={this.props.huffmanCode.serializeGraph()}
                     orientation="vertical"
+                    depthFactor={30}
                 />
             </div>
         );

@@ -3,11 +3,45 @@ import generateRandomSigns from './generateRandomSigns';
 import GraphNode from './GraphNode';
 import Signs from '../interfaces/Signs';
 
+interface SerializedNode {
+    name: string;
+    attributes: {
+        p: number
+    };
+    children: SerializedNode[];
+}
+
 class HuffmanCoding {
     initialData: Signs;
     dataSigns: Sign[];
     graphNodes: GraphNode[];
     root: GraphNode;
+    serialized: SerializedNode[];
+
+    mapGraphNodeToSerializedData = (node: GraphNode): SerializedNode => {
+        const serializedNode = {
+            name: node.sign.name || '',
+            attributes: {
+                p: +node.sign.p.toFixed(2)
+            },
+            children: []
+        };
+
+        if (node.leftLeaf) {
+            const leftLeafSerialized: SerializedNode = this.mapGraphNodeToSerializedData(node.leftLeaf);
+            serializedNode.children.push(leftLeafSerialized);
+        }
+        if (node.rightLeaf) {
+            const rightLeafSerialized: SerializedNode = this.mapGraphNodeToSerializedData(node.rightLeaf);
+            serializedNode.children.push(rightLeafSerialized);
+        }
+
+        return serializedNode;
+    }
+
+    serializeGraph = () => {
+        return [this.mapGraphNodeToSerializedData(this.root)];
+    }
 
     constructor(initialData: Signs = generateRandomSigns(10)) {
         this.initialData = initialData;
@@ -19,6 +53,8 @@ class HuffmanCoding {
         this.graphNodes = this.dataSigns.map(this.mapSignToGraphNode);
 
         this.createGraph();
+
+        this.serialized = this.serializeGraph();
     }
 
     mapStringToSign = (sign: string): Sign => {
@@ -73,7 +109,6 @@ class HuffmanCoding {
         this.root = rootNode;
 
         this.createNewRootNode(this.root);
-        console.log(this);
         this.graphNodes.forEach( graphNode => {
             this.createNewRootNode(this.root);
         });
