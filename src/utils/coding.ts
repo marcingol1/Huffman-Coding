@@ -18,6 +18,33 @@ class HuffmanCoding {
     root: GraphNode;
     serialized: SerializedNode[];
 
+    constructor(initialData: Signs = generateRandomSigns('asdasdasdasd')) {
+        this.initialData = initialData;
+        this.dataSigns = initialData
+            .signs
+            .sort()
+            .filter( (el, index) => !index || el !== initialData.signs[index - 1]) // dirty done - get only unique ones
+            .map(this.mapStringToSign);
+        this.graphNodes = this.dataSigns.map(this.mapSignToGraphNode);
+
+        this.createGraph();
+
+        this.serialized = this.serializeGraph();
+    }
+
+    getNodeCode = () => {
+        console.log('asdas');
+    }
+
+    countGraphEntropy = () => {
+        let entropy = 0;
+        this.dataSigns
+            .forEach( sign => {
+                entropy += sign.p * Math.log2( 1 / sign.p);
+            });
+        return entropy;
+    }
+
     mapGraphNodeToSerializedData = (node: GraphNode): SerializedNode => {
         const serializedNode = {
             name: node.sign.name || '',
@@ -40,21 +67,8 @@ class HuffmanCoding {
     }
 
     serializeGraph = () => {
+        console.log(this.root);
         return [this.mapGraphNodeToSerializedData(this.root)];
-    }
-
-    constructor(initialData: Signs = generateRandomSigns('asdasdasdasd')) {
-        this.initialData = initialData;
-        this.dataSigns = initialData
-            .signs
-            .sort()
-            .filter( (el, index) => !index || el !== initialData.signs[index - 1]) // dirty done - get only unique ones
-            .map(this.mapStringToSign);
-        this.graphNodes = this.dataSigns.map(this.mapSignToGraphNode);
-
-        this.createGraph();
-
-        this.serialized = this.serializeGraph();
     }
 
     mapStringToSign = (sign: string): Sign => {
@@ -67,9 +81,12 @@ class HuffmanCoding {
 
     createNewRootNode = (root: GraphNode) => {
         // Create new graph node with no sign
-        const rightNode: GraphNode = this.graphNodes
-            .reduce( (prev, next) => {
-                return next.sign.p < prev.sign.p ? next : prev;
+        let rightNode: GraphNode = this.graphNodes[0];
+        this.graphNodes
+            .forEach( (node) => {
+                if (node.sign.p < rightNode.sign.p) {
+                    rightNode = node;
+                }
             });
         this.graphNodes = this.graphNodes.filter( filter => filter !== rightNode);
 

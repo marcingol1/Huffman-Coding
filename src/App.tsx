@@ -3,6 +3,7 @@ import './App.css';
 import HuffmanCoding from './utils/coding';
 import HuffmanTree from './components/HuffmanTree';
 import generateRandomSigns from './utils/generateRandomSigns';
+import HuffmanStats from './components/HuffmanStats';
 
 class App extends React.Component {
     textTemp = '';
@@ -14,7 +15,7 @@ class App extends React.Component {
         this.setState(state => ({...this.state, text}));
     }
 
-    setTextTemp = (event) => {
+    setTempText = (event) => {
         this.textTemp = event.target.value;
     }
 
@@ -24,10 +25,13 @@ class App extends React.Component {
             <div className="App">
                 <div style={{display: 'flex', height: '40px', padding: '10px', justifyContent: 'space-around'}}>
                     <p>Enter your code: </p>
-                    <input onChange={this.setTextTemp}/>
+                    <input onChange={this.setTempText}/>
                     <button onClick={() => this.setText(this.textTemp)}> Generate tree!</button>
                 </div>
-                <HuffmanTree huffmanCode={huffmanCode}/>
+                <div style={{display: 'flex'}}>
+                    <HuffmanTree huffmanCode={huffmanCode}/>
+                    <HuffmanStats huffmanCode={huffmanCode} />
+                </div>
             </div>
         );
     }
