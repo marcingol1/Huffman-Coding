@@ -23,6 +23,7 @@ class HuffmanCoding {
     root: GraphNode;
     serialized: SerializedNode[];
     nodeCodes: NodeCode[];
+    codingLength: number;
 
     constructor(initialData: Signs = generateRandomSigns('asdasdasdasd')) {
         this.initialData = initialData;
@@ -34,9 +35,11 @@ class HuffmanCoding {
         this.graphNodes = this.dataSigns.map(this.mapSignToGraphNode);
 
         this.nodeCodes = [];
+        this.codingLength = 0;
 
         this.createGraph();
         this.addCodesToGraphNodes(this.root);
+        this.countAverageCodingLength(this.root);
 
         this.serialized = this.serializeGraph();
     }
@@ -78,6 +81,20 @@ class HuffmanCoding {
                 entropy += sign.p * Math.log2( 1 / sign.p);
             });
         return entropy;
+    }
+
+    countAverageCodingLength = (node: GraphNode) => {
+        if (node.leftLeaf) {
+            this.countAverageCodingLength(node.leftLeaf);
+        }
+        if (node.rightLeaf) {
+            this.countAverageCodingLength(node.rightLeaf);
+        }
+        if (!node.leftLeaf && !node.rightLeaf) {
+            console.log(this.codingLength);
+            this.codingLength += node.code.length * node.sign.p;
+            console.log(this.codingLength);
+        }
     }
 
     mapGraphNodeToSerializedData = (node: GraphNode): SerializedNode => {

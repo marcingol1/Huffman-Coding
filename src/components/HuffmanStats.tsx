@@ -8,6 +8,7 @@ interface NodeCode {
 interface Props {
     huffmanStats: NodeCode[]; // @TODO: extract interface to other file
     entropy: number;
+    averageLength: number;
 }
 
 class HuffmanStats extends React.Component<Props> {
@@ -26,7 +27,7 @@ class HuffmanStats extends React.Component<Props> {
                 </section>
                 <section>
                     <h4>Average length of sign coding:</h4>
-                    <p>{2}</p>
+                    <p>{this.props.averageLength}</p>
                 </section>
                 <section>
                     <h4>Sign codes: </h4>

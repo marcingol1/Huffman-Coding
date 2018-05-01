@@ -30,7 +30,11 @@ class App extends React.Component {
                 </div>
                 <div style={{display: 'flex'}}>
                     <HuffmanTree huffmanCode={huffmanCode}/>
-                    <HuffmanStats huffmanStats={huffmanCode.nodeCodes} entropy={huffmanCode.countGraphEntropy()}/>
+                    <HuffmanStats
+                        huffmanStats={huffmanCode.nodeCodes}
+                        entropy={huffmanCode.countGraphEntropy()}
+                        averageLength={huffmanCode.codingLength}
+                    />
                 </div>
             </div>
         );
