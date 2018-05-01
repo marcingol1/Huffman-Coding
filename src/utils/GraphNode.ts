@@ -5,6 +5,7 @@ export default class GraphNode {
     leftLeaf?: GraphNode;
     rightLeaf?: GraphNode;
     sign: Sign;
+    code: string;
 
     constructor(sign: Sign,
                 leftLeaf?: GraphNode,
@@ -16,5 +17,9 @@ export default class GraphNode {
 
         this.leftLeaf = leftLeaf;
         this.rightLeaf = rightLeaf;
+    }
+
+    setCode = (code: string): void => {
+        this.code = code;
     }
 }

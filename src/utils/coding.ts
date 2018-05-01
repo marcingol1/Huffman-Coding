@@ -32,8 +32,19 @@ class HuffmanCoding {
         this.serialized = this.serializeGraph();
     }
 
-    getNodeCode = () => {
-        console.log('asdas');
+    getNodeCode = (node: GraphNode) => {
+        let code = '';
+        let tempNode = node;
+        console.log(tempNode);
+        while (tempNode.parent) {
+            if (tempNode.parent.leftLeaf === tempNode) {
+                code += '1';
+            } else if (tempNode.parent.rightLeaf === tempNode) {
+                code += '0';
+            }
+            tempNode = tempNode.parent;
+        }
+        return code.split('').reverse().join('');
     }
 
     countGraphEntropy = () => {
@@ -67,7 +78,6 @@ class HuffmanCoding {
     }
 
     serializeGraph = () => {
-        console.log(this.root);
         return [this.mapGraphNodeToSerializedData(this.root)];
     }
 
@@ -93,6 +103,9 @@ class HuffmanCoding {
         // Add their propabilities and insert it to graph's sign's p
         const rootSign = new Sign('', root.sign.p + rightNode.sign.p);
         const rootNode = new GraphNode(rootSign, root, rightNode);
+
+        root.parent = rootNode;
+        rightNode.parent = rootNode;
 
         // Overwrite root node
         this.root = rootNode;

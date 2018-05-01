@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as _ from 'lodash';
 import './App.css';
 import HuffmanCoding from './utils/coding';
 import HuffmanTree from './components/HuffmanTree';
@@ -21,6 +22,8 @@ class App extends React.Component {
 
     render() {
         const huffmanCode = new HuffmanCoding(generateRandomSigns(this.state.text));
+        const leaf = _.get(huffmanCode.root, 'leftLeaf.leftLeaf.leftLeaf.rightLeaf', null);
+        console.log(huffmanCode.getNodeCode(leaf));
         return (
             <div className="App">
                 <div style={{display: 'flex', height: '40px', padding: '10px', justifyContent: 'space-around'}}>
