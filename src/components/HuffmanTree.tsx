@@ -15,7 +15,7 @@ class HuffmanTree extends React.Component<Props> {
                     translate={{x: 300, y: 100}}
                     data={this.props.huffmanCode.serializeGraph()}
                     orientation="vertical"
-                    depthFactor={20}
+                    depthFactor={30}
                 />
             </div>
         );

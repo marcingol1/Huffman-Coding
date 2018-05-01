@@ -11,12 +11,18 @@ interface SerializedNode {
     children: SerializedNode[];
 }
 
+interface NodeCode {
+    sign: string;
+    code: string;
+}
+
 class HuffmanCoding {
     initialData: Signs;
     dataSigns: Sign[];
     graphNodes: GraphNode[];
     root: GraphNode;
     serialized: SerializedNode[];
+    nodeCodes: NodeCode[];
 
     constructor(initialData: Signs = generateRandomSigns('asdasdasdasd')) {
         this.initialData = initialData;
@@ -27,7 +33,10 @@ class HuffmanCoding {
             .map(this.mapStringToSign);
         this.graphNodes = this.dataSigns.map(this.mapSignToGraphNode);
 
+        this.nodeCodes = [];
+
         this.createGraph();
+        this.addCodesToGraphNodes(this.root);
 
         this.serialized = this.serializeGraph();
     }
@@ -35,8 +44,7 @@ class HuffmanCoding {
     getNodeCode = (node: GraphNode) => {
         let code = '';
         let tempNode = node;
-        console.log(tempNode);
-        while (tempNode.parent) {
+        while (tempNode && tempNode.parent) {
             if (tempNode.parent.leftLeaf === tempNode) {
                 code += '1';
             } else if (tempNode.parent.rightLeaf === tempNode) {
@@ -45,6 +53,22 @@ class HuffmanCoding {
             tempNode = tempNode.parent;
         }
         return code.split('').reverse().join('');
+    }
+
+    addCodesToGraphNodes = (node: GraphNode) => {
+        if (node.leftLeaf) {
+            this.addCodesToGraphNodes(node.leftLeaf);
+        }
+        if (node.rightLeaf) {
+            this.addCodesToGraphNodes(node.rightLeaf);
+        }
+        node.code = this.getNodeCode(node);
+        if (!node.leftLeaf && !node.rightLeaf) {
+            this.nodeCodes.push({
+                sign: node.sign.name,
+                code: node.code
+            });
+        }
     }
 
     countGraphEntropy = () => {
@@ -60,7 +84,8 @@ class HuffmanCoding {
         const serializedNode = {
             name: node.sign.name || '',
             attributes: {
-                p: +node.sign.p.toFixed(2)
+                p: +node.sign.p.toFixed(2),
+                code: node.code
             },
             children: []
         };

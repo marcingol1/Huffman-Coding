@@ -1,21 +1,19 @@
 import * as React from 'react';
-import HuffmanCoding from '../utils/coding';
+
+interface NodeCode {
+    sign: string;
+    code: string;
+}
 
 interface Props {
-    huffmanCode: HuffmanCoding;
+    huffmanStats: NodeCode[]; // @TODO: extract interface to other file
+    entropy: number;
 }
 
 class HuffmanStats extends React.Component<Props> {
-
-    codes = [
-        {sign: 's'},
-        {sign: 'a'},
-        {sign: 'b'},
-    ];
-
     getSingleCodeComponent = (code) => (
         <p key={code.sign + '-key-sign'}>
-            <span>{code.sign}</span><span>{5}</span>
+            <span>`{code.sign}`: </span><span>{code.code}</span>
         </p>
     )
 
@@ -24,7 +22,7 @@ class HuffmanStats extends React.Component<Props> {
             <div>
                 <section>
                     <h4>Entropy of code:</h4>
-                    <p>{this.props.huffmanCode.countGraphEntropy()}</p>
+                    <p>{this.props.entropy}</p>
                 </section>
                 <section>
                     <h4>Average length of sign coding:</h4>
@@ -32,7 +30,7 @@ class HuffmanStats extends React.Component<Props> {
                 </section>
                 <section>
                     <h4>Sign codes: </h4>
-                    {this.codes.map(this.getSingleCodeComponent)}
+                    {this.props.huffmanStats.map(this.getSingleCodeComponent)}
                 </section>
             </div>
         );

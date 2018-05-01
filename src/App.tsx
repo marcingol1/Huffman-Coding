@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as _ from 'lodash';
 import './App.css';
 import HuffmanCoding from './utils/coding';
 import HuffmanTree from './components/HuffmanTree';
@@ -9,7 +8,7 @@ import HuffmanStats from './components/HuffmanStats';
 class App extends React.Component {
     textTemp = '';
     state = {
-        text: 'test value for lolz'
+        text: 'test value'
     };
 
     setText = (text) => {
@@ -22,8 +21,6 @@ class App extends React.Component {
 
     render() {
         const huffmanCode = new HuffmanCoding(generateRandomSigns(this.state.text));
-        const leaf = _.get(huffmanCode.root, 'leftLeaf.leftLeaf.leftLeaf.rightLeaf', null);
-        console.log(huffmanCode.getNodeCode(leaf));
         return (
             <div className="App">
                 <div style={{display: 'flex', height: '40px', padding: '10px', justifyContent: 'space-around'}}>
@@ -33,7 +30,7 @@ class App extends React.Component {
                 </div>
                 <div style={{display: 'flex'}}>
                     <HuffmanTree huffmanCode={huffmanCode}/>
-                    <HuffmanStats huffmanCode={huffmanCode} />
+                    <HuffmanStats huffmanStats={huffmanCode.nodeCodes} entropy={huffmanCode.countGraphEntropy()}/>
                 </div>
             </div>
         );
