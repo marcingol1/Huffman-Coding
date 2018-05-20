@@ -26,7 +26,7 @@ class App extends React.Component {
                 <div style={{display: 'flex', height: '40px', padding: '10px', justifyContent: 'space-around'}}>
                     <p>Enter your code: </p>
                     <input onChange={this.setTempText}/>
-                    <button onClick={() => this.setText(this.textTemp)}> Generate tree!</button>
+                    <button onClick={() => this.textTemp ? this.setText(this.textTemp) : null}> Generate tree!</button>
                 </div>
                 <div style={{display: 'flex'}}>
                     <HuffmanTree huffmanCode={huffmanCode}/>
