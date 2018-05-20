@@ -91,9 +91,7 @@ class HuffmanCoding {
             this.countAverageCodingLength(node.rightLeaf);
         }
         if (!node.leftLeaf && !node.rightLeaf) {
-            console.log(this.codingLength);
             this.codingLength += node.code.length * node.sign.p;
-            console.log(this.codingLength);
         }
     }
 

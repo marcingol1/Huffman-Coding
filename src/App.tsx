@@ -34,6 +34,8 @@ class App extends React.Component {
                         huffmanStats={huffmanCode.nodeCodes}
                         entropy={huffmanCode.countGraphEntropy()}
                         averageLength={huffmanCode.codingLength}
+                        text={this.state.text}
+                        huffmanCode={huffmanCode}
                     />
                 </div>
             </div>
