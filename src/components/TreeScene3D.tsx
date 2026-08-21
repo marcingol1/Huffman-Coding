@@ -155,7 +155,7 @@ export default function TreeScene3D({ layout, onUnsupported, ref }: Props) {
         fill.position.set(-8, -3, 6);
         world.add(fill);
 
-        const rim = new THREE.DirectionalLight(new THREE.Color(palette.accent), 0.6);
+        const rim = new THREE.DirectionalLight(new THREE.Color(palette['scene-rim']), 0.7);
         rim.position.set(-4, 5, -10);
         world.add(rim);
 
@@ -255,12 +255,13 @@ export default function TreeScene3D({ layout, onUnsupported, ref }: Props) {
             return texture;
         };
 
+        // Matte throughout. The accent is spent on the bit-path below, not on
+        // coating every node, so nothing here is glossy or emissive.
         const internalMaterial = new THREE.MeshStandardMaterial({
-            color: new THREE.Color(palette['scene-node']), roughness: 0.55, metalness: 0.18
+            color: new THREE.Color(palette['scene-node']), roughness: 0.92, metalness: 0
         });
         const leafMaterial = new THREE.MeshStandardMaterial({
-            color: new THREE.Color(palette['leaf-fill']), roughness: 0.4, metalness: 0.1,
-            emissive: new THREE.Color(palette.accent), emissiveIntensity: 0.08
+            color: new THREE.Color(palette['leaf-fill']), roughness: 0.88, metalness: 0
         });
         const internalGeometry = new THREE.SphereGeometry(0.24, 24, 16);
         const leafGeometry = new THREE.SphereGeometry(0.46, 32, 24);

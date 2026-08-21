@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from 'react';
 
 const TOKENS = [
-    'scene-bg', 'scene-node', 'scene-edge',
+    'scene-bg', 'scene-node', 'scene-edge', 'scene-rim',
     'leaf-fill', 'leaf-ink', 'accent', 'bit-one-ink', 'fg-muted'
 ] as const;
 

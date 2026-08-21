@@ -50,13 +50,14 @@
     --overlay: rgba(255, 255, 255, 0.86);
     --fade: rgba(232, 238, 245, 0.95);
     --fade-clear: rgba(232, 238, 245, 0);
-    --leaf-fill: #15803D;
+    --leaf-fill: #475569;
     --leaf-ink: #FFFFFF;
     /* The tree scenes paint from these rather than borrowing surface tokens,
        because a node has to read AGAINST the surface, not sit level with it. */
     --scene-bg: #E8EEF5;
-    --scene-node: #94A3B8;
+    --scene-node: #A9B6C7;
     --scene-edge: #94A3B8;
+    --scene-rim: #FFFFFF;
     --bit-one-ink: #15803D;
 
     --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
@@ -118,11 +119,12 @@
         --overlay: rgba(11, 18, 32, 0.82);
         --fade: rgba(11, 18, 32, 0.95);
         --fade-clear: rgba(11, 18, 32, 0);
-        --leaf-fill: #14532D;
-        --leaf-ink: #F8FAFC;
+        --leaf-fill: #A7B4C7;
+        --leaf-ink: #0F172A;
         --scene-bg: #0B1220;
         --scene-node: #2A3450;
         --scene-edge: #3D4A68;
+        --scene-rim: #93A8C4;
         --bit-one-ink: #4ADE80;
 
         --shadow-sm: 0 1px 2px rgba(6, 11, 25, 0.6);
@@ -160,11 +162,12 @@
     --overlay: rgba(11, 18, 32, 0.82);
     --fade: rgba(11, 18, 32, 0.95);
     --fade-clear: rgba(11, 18, 32, 0);
-    --leaf-fill: #14532D;
-    --leaf-ink: #F8FAFC;
+    --leaf-fill: #A7B4C7;
+    --leaf-ink: #0F172A;
     --scene-bg: #0B1220;
     --scene-node: #2A3450;
     --scene-edge: #3D4A68;
+    --scene-rim: #93A8C4;
     --bit-one-ink: #4ADE80;
 
     --shadow-sm: 0 1px 2px rgba(6, 11, 25, 0.6);
