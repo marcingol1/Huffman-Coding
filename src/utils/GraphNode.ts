@@ -1,11 +1,11 @@
-import Sign from './Sign';
+import type Sign from './Sign';
 
 export default class GraphNode {
     parent?: GraphNode;
     leftLeaf?: GraphNode;
     rightLeaf?: GraphNode;
     sign: Sign;
-    code: string;
+    code: string = '';
 
     constructor(sign: Sign,
                 leftLeaf?: GraphNode,
@@ -17,9 +17,5 @@ export default class GraphNode {
 
         this.leftLeaf = leftLeaf;
         this.rightLeaf = rightLeaf;
-    }
-
-    setCode = (code: string): void => {
-        this.code = code;
     }
 }

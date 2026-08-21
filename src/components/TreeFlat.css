@@ -1,0 +1,83 @@
+.tree-flat {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-control);
+    overflow: hidden;
+    background: var(--bg-sunken);
+    cursor: grab;
+    touch-action: none;
+}
+
+.tree-flat:active {
+    cursor: grabbing;
+}
+
+.tree-flat__canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.tree-flat__edge {
+    stroke: var(--border-strong);
+    stroke-width: 1.5;
+}
+
+/* Same rule as the codebook: a 1-bit carries the accent, a 0-bit recedes. */
+.tree-flat__edge--one {
+    stroke: var(--accent-dim);
+    stroke-width: 2;
+}
+
+.tree-flat__bit {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    fill: var(--fg-muted);
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
+
+.tree-flat__bit--one {
+    fill: var(--accent);
+}
+
+.tree-flat__node {
+    fill: var(--panel-raised);
+    stroke: var(--border-strong);
+    stroke-width: 1.5;
+}
+
+.tree-flat__leaf {
+    fill: #14532D;
+    stroke: var(--accent);
+    stroke-width: 1.75;
+}
+
+.tree-flat__symbol {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--fg);
+    text-anchor: middle;
+}
+
+.tree-flat__hint {
+    position: absolute;
+    left: var(--space-sm);
+    bottom: var(--space-sm);
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(11, 18, 32, 0.82);
+    border: 1px solid var(--border);
+    color: var(--fg-subtle);
+    font-size: 11.5px;
+    pointer-events: none;
+}
+
+@media (max-width: 600px) {
+    .tree-flat__hint {
+        display: none;
+    }
+}

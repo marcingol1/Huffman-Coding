@@ -1,0 +1,123 @@
+.tree-panel__controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+/* Segmented control: pill outer, the active segment carries the accent. */
+.tree-panel__toggle {
+    display: inline-flex;
+    padding: 2px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-sunken);
+}
+
+.tree-panel__toggle-btn {
+    min-height: 28px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--fg-muted);
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.tree-panel__toggle-btn:hover:not(:disabled) {
+    color: var(--fg);
+}
+
+.tree-panel__toggle-btn.is-active {
+    background: var(--accent);
+    color: var(--on-accent);
+}
+
+.tree-panel__toggle-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.tree-panel__stage {
+    height: 460px;
+    min-height: 320px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    overflow: hidden;
+    background: var(--bg-sunken);
+}
+
+.tree-panel__empty {
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+}
+
+.tree-panel__notice {
+    margin-top: var(--space-sm);
+}
+
+.tree-panel__legend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: var(--space-sm);
+    font-size: 12.5px;
+    color: var(--fg-muted);
+}
+
+.tree-panel__key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.tree-panel__key--zero {
+    background: var(--muted);
+    color: var(--fg-muted);
+}
+
+.tree-panel__key--one {
+    background: var(--accent-wash);
+    color: var(--accent);
+    border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.tree-panel__key--one + span,
+.tree-panel__legend-note {
+    color: var(--fg-subtle);
+}
+
+.tree-panel__legend-note {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+}
+
+@media (min-width: 1080px) {
+    .tree-panel__stage {
+        height: 560px;
+    }
+}
+
+@media (max-width: 600px) {
+    .tree-panel__stage {
+        height: 340px;
+    }
+
+    .tree-panel__legend-note {
+        margin-left: 0;
+        width: 100%;
+    }
+}
