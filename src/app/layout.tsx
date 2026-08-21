@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { THEME_INIT_SCRIPT } from '../utils/theme';
 
 // Self-hosted so the first paint never waits on a font host. App Router allows
 // global stylesheets only here, so every component sheet is registered too.
@@ -17,6 +18,7 @@ import '../components/TreePanel.css';
 import '../components/TreeScene3D.css';
 import '../components/TreeFlat.css';
 import '../components/EncodedOutput.css';
+import '../components/ThemeToggle.css';
 
 export const metadata: Metadata = {
     title: 'Huffman Coding — build a tree, read the bits',
@@ -26,8 +28,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-    themeColor: '#0F172A',
-    colorScheme: 'dark',
+    themeColor: [
+        { media: '(prefers-color-scheme: light)', color: '#F1F5F9' },
+        { media: '(prefers-color-scheme: dark)', color: '#0F172A' }
+    ],
+    colorScheme: 'light dark',
     width: 'device-width',
     initialScale: 1,
     viewportFit: 'cover'
@@ -35,8 +40,12 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en">
-            <body>{children}</body>
+        <html lang="en" suppressHydrationWarning>
+            <body>
+                {/* Runs before the first paint so a stored choice never flashes. */}
+                <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }}/>
+                {children}
+            </body>
         </html>
     );
 }

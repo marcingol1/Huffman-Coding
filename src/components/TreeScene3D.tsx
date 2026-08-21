@@ -5,6 +5,7 @@ import type { Ref, PointerEvent as ReactPointerEvent, KeyboardEvent as ReactKeyb
 import * as THREE from 'three';
 import type { LaidOutNode, TreeLayout } from '../utils/layoutTree';
 import { displaySymbol } from '../utils/format';
+import useScenePalette from './useScenePalette';
 
 export interface TreeSceneHandle {
     resetView: () => void;
@@ -16,15 +17,6 @@ interface Props {
     ref?: Ref<TreeSceneHandle>;
 }
 
-const PALETTE = {
-    background: 0x0b1220,
-    internal: 0x2a3450,
-    leaf: 0x14532d,
-    accent: 0x22c55e,
-    edge: 0x3d4a68,
-    label: '#F8FAFC',
-    labelMuted: '#A7B4C7'
-};
 
 const HOME = { theta: 0, phi: Math.PI / 2 };
 const MIN_PHI = 0.35;
@@ -32,6 +24,7 @@ const MAX_PHI = Math.PI - 0.35;
 const KEY_STEP = 0.12;
 
 export default function TreeScene3D({ layout, onUnsupported, ref }: Props) {
+    const palette = useScenePalette();
     const host = useRef<HTMLDivElement>(null);
     const renderer = useRef<THREE.WebGLRenderer | null>(null);
     const scene = useRef<THREE.Scene | null>(null);
@@ -116,6 +109,9 @@ export default function TreeScene3D({ layout, onUnsupported, ref }: Props) {
 
     useEffect(() => {
         const box = host.current;
+        if (!palette) {
+            return;
+        }
         // Checked before touching a canvas so three never logs its own context error.
         if (!box || typeof WebGLRenderingContext === 'undefined') {
             onUnsupported();
@@ -131,7 +127,7 @@ export default function TreeScene3D({ layout, onUnsupported, ref }: Props) {
         }
 
         gl.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-        gl.setClearColor(PALETTE.background, 1);
+        gl.setClearColor(new THREE.Color(palette['scene-bg']), 1);
         gl.outputColorSpace = THREE.SRGBColorSpace;
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         gl.toneMappingExposure = 1.05;
@@ -147,8 +143,9 @@ export default function TreeScene3D({ layout, onUnsupported, ref }: Props) {
          * keeps a node readable against a node behind it once the view is tilted.
          */
         const world = new THREE.Scene();
-        world.background = new THREE.Color(PALETTE.background);
-        world.fog = new THREE.Fog(PALETTE.background, 22, 68);
+        const backdrop = new THREE.Color(palette['scene-bg']);
+        world.background = backdrop;
+        world.fog = new THREE.Fog(backdrop, 22, 68);
 
         const key = new THREE.DirectionalLight(0xe8f0ff, 2.4);
         key.position.set(5, 8, 10);
@@ -158,7 +155,7 @@ export default function TreeScene3D({ layout, onUnsupported, ref }: Props) {
         fill.position.set(-8, -3, 6);
         world.add(fill);
 
-        const rim = new THREE.DirectionalLight(PALETTE.accent, 0.6);
+        const rim = new THREE.DirectionalLight(new THREE.Color(palette.accent), 0.6);
         rim.position.set(-4, 5, -10);
         world.add(rim);
 
@@ -204,13 +201,13 @@ export default function TreeScene3D({ layout, onUnsupported, ref }: Props) {
             gl.dispose();
             gl.domElement.remove();
         };
-    }, [onUnsupported, resize, zoom]);
+    }, [palette, onUnsupported, resize, zoom]);
 
     /* ----------------------------------------------------------------- graph */
 
     useEffect(() => {
         const group = graph.current;
-        if (!group) {
+        if (!group || !palette) {
             return;
         }
 
@@ -251,16 +248,19 @@ export default function TreeScene3D({ layout, onUnsupported, ref }: Props) {
 
             const texture = new THREE.CanvasTexture(canvas);
             texture.minFilter = THREE.LinearFilter;
+            // The canvas is authored in sRGB; without this three reads it as
+            // linear and washes every label toward the light end.
+            texture.colorSpace = THREE.SRGBColorSpace;
             labelCache.current.set(cacheKey, texture);
             return texture;
         };
 
         const internalMaterial = new THREE.MeshStandardMaterial({
-            color: PALETTE.internal, roughness: 0.55, metalness: 0.18
+            color: new THREE.Color(palette['scene-node']), roughness: 0.55, metalness: 0.18
         });
         const leafMaterial = new THREE.MeshStandardMaterial({
-            color: PALETTE.leaf, roughness: 0.4, metalness: 0.1,
-            emissive: PALETTE.accent, emissiveIntensity: 0.08
+            color: new THREE.Color(palette['leaf-fill']), roughness: 0.4, metalness: 0.1,
+            emissive: new THREE.Color(palette.accent), emissiveIntensity: 0.08
         });
         const internalGeometry = new THREE.SphereGeometry(0.24, 24, 16);
         const leafGeometry = new THREE.SphereGeometry(0.46, 32, 24);
@@ -268,9 +268,10 @@ export default function TreeScene3D({ layout, onUnsupported, ref }: Props) {
         const addLabel = (node: LaidOutNode) => {
             const symbol = displaySymbol(node.name);
             const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-                map: textureFor(symbol.glyph, PALETTE.label, 700),
+                map: textureFor(symbol.glyph, palette['leaf-ink'], 700),
                 transparent: true,
-                depthTest: false
+                depthTest: false,
+                toneMapped: false
             }));
             sprite.position.set(node.x, node.y, node.z + 0.3);
             sprite.scale.set(0.78, 0.78, 1);
@@ -306,10 +307,10 @@ export default function TreeScene3D({ layout, onUnsupported, ref }: Props) {
                     isOne ? 0.045 : 0.035, isOne ? 0.045 : 0.035, span.length(), 8
                 ),
                 new THREE.MeshStandardMaterial({
-                    color: isOne ? PALETTE.accent : PALETTE.edge,
+                    color: new THREE.Color(isOne ? palette.accent : palette['scene-edge']),
                     roughness: 0.6,
                     metalness: 0.1,
-                    emissive: isOne ? PALETTE.accent : 0x000000,
+                    emissive: new THREE.Color(isOne ? palette.accent : '#000000'),
                     emissiveIntensity: isOne ? 0.12 : 0
                 })
             );
@@ -318,9 +319,10 @@ export default function TreeScene3D({ layout, onUnsupported, ref }: Props) {
             group.add(mesh);
 
             const label = new THREE.Sprite(new THREE.SpriteMaterial({
-                map: textureFor(edge.bit, isOne ? '#4ADE80' : '#B6C2D4', 700),
+                map: textureFor(edge.bit, isOne ? palette['bit-one-ink'] : palette['fg-muted'], 700),
                 transparent: true,
-                depthTest: false
+                depthTest: false,
+                toneMapped: false
             }));
             const sideways = new THREE.Vector3(-span.y, span.x, 0).normalize().multiplyScalar(0.34);
             label.position.copy(start).lerp(end, 0.45).add(sideways).add(new THREE.Vector3(0, 0, 0.3));
@@ -331,7 +333,7 @@ export default function TreeScene3D({ layout, onUnsupported, ref }: Props) {
 
         frameCamera();
         draw();
-    }, [layout, draw, frameCamera]);
+    }, [layout, palette, draw, frameCamera]);
 
     /* -------------------------------------------------------------- controls */
 

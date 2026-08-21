@@ -90,8 +90,8 @@
 
 .tree-panel__key--one {
     background: var(--accent-wash);
-    color: var(--accent);
-    border: 1px solid rgba(34, 197, 94, 0.35);
+    color: var(--accent-ink);
+    border: 1px solid var(--accent-edge);
 }
 
 .tree-panel__key--one + span,

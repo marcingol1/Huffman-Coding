@@ -8,6 +8,7 @@ import Metrics from './Metrics';
 import Codebook from './Codebook';
 import TreePanel from './TreePanel';
 import EncodedOutput from './EncodedOutput';
+import ThemeToggle from './ThemeToggle';
 
 const MAX_LENGTH = 500;
 const FIXED_WIDTH_BITS = 8;
@@ -32,6 +33,7 @@ export default function Workspace() {
                     <p className="app__tagline">
                         Build the tree, read the codebook, watch the bitstream shrink.
                     </p>
+                    <ThemeToggle/>
                 </div>
             </header>
 

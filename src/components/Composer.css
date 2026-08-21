@@ -84,7 +84,7 @@
 }
 
 .composer__chip--active {
-    color: var(--accent);
+    color: var(--accent-ink);
     border-color: var(--accent);
     background: var(--accent-wash);
 }
