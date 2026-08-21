@@ -1,4 +1,4 @@
-import { SerializedNode } from './coding';
+import type { SerializedNode } from './coding';
 
 interface LaidOutNode {
     id: number;
@@ -115,5 +115,5 @@ function layoutTree(serialized: SerializedNode[]): TreeLayout {
     };
 }
 
-export { LaidOutNode, LaidOutEdge, TreeLayout };
+export type { LaidOutNode, LaidOutEdge, TreeLayout };
 export default layoutTree;

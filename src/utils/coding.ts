@@ -1,7 +1,7 @@
 import Sign from './Sign';
 import generateRandomSigns from './generateRandomSigns';
 import GraphNode from './GraphNode';
-import Signs from '../interfaces/Signs';
+import type Signs from '../interfaces/Signs';
 
 interface SerializedNode {
     name: string;
@@ -23,7 +23,7 @@ class HuffmanCoding {
     initialData: Signs;
     dataSigns: Sign[];
     graphNodes: GraphNode[];
-    root: GraphNode;
+    root?: GraphNode;
     serialized: SerializedNode[];
     nodeCodes: NodeCode[];
     codingLength: number;
@@ -100,7 +100,7 @@ class HuffmanCoding {
 
     /** Encodes the source text with the generated codebook. */
     encode = (text: string): string => {
-        const codeBySign = {};
+        const codeBySign: { [sign: string]: string } = {};
         this.nodeCodes.forEach( nodeCode => {
             codeBySign[nodeCode.sign] = nodeCode.code;
         });
@@ -176,8 +176,7 @@ class HuffmanCoding {
     }
 
     private getSignCount = (sign: string): number => {
-        const entry = this.initialData[sign];
-        return entry ? entry.count : 0;
+        return this.initialData.counts[sign] || 0;
     }
 
     /** Most frequent signs first, then alphabetically, so the codebook is stable. */
@@ -189,5 +188,5 @@ class HuffmanCoding {
     }
 }
 
-export { NodeCode, SerializedNode };
+export type { NodeCode, SerializedNode };
 export default HuffmanCoding;

@@ -1,130 +1,171 @@
-import * as React from 'react';
-import Tree from 'react-d3-tree';
-import './TreeFlat.css';
-import { SerializedNode } from '../utils/coding';
+'use client';
+
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { PointerEvent as ReactPointerEvent } from 'react';
+import type { TreeLayout } from '../utils/layoutTree';
 import { displaySymbol } from '../utils/format';
 
 interface Props {
-    serialized: SerializedNode[];
+    layout: TreeLayout;
 }
 
-interface State {
-    translate: { x: number; y: number };
-    zoom: number;
+/** Layout units are abstract; this turns one into a comfortable number of pixels. */
+const SCALE = 42;
+const PADDING = 34;
+const LEAF_RADIUS = 15;
+const NODE_RADIUS = 7;
+
+interface View {
+    x: number;
+    y: number;
+    k: number;
 }
 
-const NODE_STYLES = {
-    nodes: {
-        node: {
-            circle: { fill: '#2A3450', stroke: '#475569', strokeWidth: 1.5 },
-            name: { fill: '#F8FAFC', stroke: 'none', fontSize: '12px', fontWeight: 500 },
-            attributes: { fill: 'none', stroke: 'none' }
-        },
-        leafNode: {
-            circle: { fill: '#14532D', stroke: '#22C55E', strokeWidth: 1.75 },
-            name: { fill: '#F8FAFC', stroke: 'none', fontSize: '12px', fontWeight: 600 },
-            attributes: { fill: 'none', stroke: 'none' }
+export default function TreeFlat({ layout }: Props) {
+    const host = useRef<HTMLDivElement>(null);
+    const drag = useRef<{ x: number; y: number } | null>(null);
+    const [view, setView] = useState<View>({ x: 0, y: 0, k: 1 });
+
+    const bounds = useMemo(() => {
+        if (!layout.nodes.length) {
+            return { minX: 0, maxX: 0, minY: 0, maxY: 0, width: 0, height: 0 };
         }
-    },
-    links: { stroke: '#3D4A68', strokeWidth: 1.5 }
-};
+        const xs = layout.nodes.map( node => node.x * SCALE );
+        const ys = layout.nodes.map( node => -node.y * SCALE );
+        const minX = Math.min(...xs) - PADDING;
+        const maxX = Math.max(...xs) + PADDING;
+        const minY = Math.min(...ys) - PADDING;
+        const maxY = Math.max(...ys) + PADDING;
+        return { minX, maxX, minY, maxY, width: maxX - minX, height: maxY - minY };
+    }, [layout]);
 
-const NODE_SIZE = { x: 58, y: 84 };
-
-/*
- * Only the symbol travels with the node. Probability and code already have a
- * column each in the codebook, and repeating them here just collides with the
- * circles.
- */
-function toDisplayTree(node: SerializedNode): SerializedNode {
-    const isLeaf = !node.children || node.children.length === 0;
-    return {
-        name: isLeaf ? displaySymbol(node.name).glyph : '',
-        attributes: undefined,
-        children: isLeaf ? [] : node.children.map(toDisplayTree)
-    };
-}
-
-function countLeaves(node: SerializedNode): number {
-    if (!node.children || !node.children.length) {
-        return 1;
-    }
-    return node.children.reduce( (total, child) => total + countLeaves(child), 0);
-}
-
-class TreeFlat extends React.Component<Props, State> {
-    state: State = {
-        translate: { x: 240, y: 56 },
-        zoom: 0.8
-    };
-
-    private host: HTMLDivElement;
-
-    componentDidMount() {
-        window.addEventListener('resize', this.recentre);
-        this.recentre();
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.recentre);
-    }
-
-    /** Centre the root and start at a zoom that puts the whole tree on screen. */
-    recentre = (): void => {
-        if (!this.host) {
+    /** Fit the whole tree, then centre it, whenever the tree or the box changes. */
+    const fit = useCallback(() => {
+        const box = host.current;
+        if (!box || !bounds.width || !bounds.height) {
             return;
         }
-        const width = this.host.clientWidth;
-        const height = this.host.clientHeight;
-        const source = this.props.serialized[0];
-        const leaves = source ? countLeaves(source) : 1;
-        // d3 spreads siblings a little wider than the raw node size, so leave headroom.
-        const spread = leaves * NODE_SIZE.x * 1.2;
-        const zoom = Math.min(1, Math.max(0.2, (width - 64) / spread));
-
-        this.setState({
-            translate: { x: width / 2, y: Math.min(64, height * 0.14) },
-            zoom
+        const k = Math.min(1.6, (box.clientWidth - 16) / bounds.width,
+                           (box.clientHeight - 16) / bounds.height);
+        setView({
+            x: box.clientWidth / 2 - ((bounds.minX + bounds.maxX) / 2) * k,
+            y: box.clientHeight / 2 - ((bounds.minY + bounds.maxY) / 2) * k,
+            k
         });
-    }
+    }, [bounds]);
 
-    setHost = (element: HTMLDivElement): void => {
-        this.host = element;
-    }
-
-    componentDidUpdate(prevProps: Props) {
-        if (prevProps.serialized !== this.props.serialized) {
-            this.recentre();
+    useEffect(() => {
+        fit();
+        const box = host.current;
+        if (!box || typeof ResizeObserver === 'undefined') {
+            return;
         }
-    }
+        const observer = new ResizeObserver(fit);
+        observer.observe(box);
+        return () => observer.disconnect();
+    }, [fit]);
 
-    render() {
-        const data = this.props.serialized.map(toDisplayTree);
+    useEffect(() => {
+        const box = host.current;
+        if (!box) {
+            return;
+        }
+        // Registered natively so preventDefault sticks: React's wheel handler is passive.
+        const onWheel = (event: WheelEvent) => {
+            event.preventDefault();
+            const factor = event.deltaY > 0 ? 1 / 1.12 : 1.12;
+            const rect = box.getBoundingClientRect();
+            const px = event.clientX - rect.left;
+            const py = event.clientY - rect.top;
+            setView( current => {
+                const k = Math.min(4, Math.max(0.1, current.k * factor));
+                const ratio = k / current.k;
+                return { k, x: px - (px - current.x) * ratio, y: py - (py - current.y) * ratio };
+            });
+        };
+        box.addEventListener('wheel', onWheel, { passive: false });
+        return () => box.removeEventListener('wheel', onWheel);
+    }, []);
 
-        return (
-            <div className="tree-flat" ref={this.setHost}>
-                <Tree
-                    data={data}
-                    orientation="vertical"
-                    translate={this.state.translate}
-                    pathFunc="diagonal"
-                    collapsible={false}
-                    zoomable={true}
-                    zoom={this.state.zoom}
-                    scaleExtent={{ min: 0.15, max: 3 }}
-                    separation={{ siblings: 1, nonSiblings: 1.25 }}
-                    nodeSize={NODE_SIZE}
-                    transitionDuration={0}
-                    styles={NODE_STYLES}
-                    circleRadius={15}
-                    textLayout={{ textAnchor: 'middle', x: 0, y: 4, transform: undefined }}
-                />
-                <p className="tree-flat__hint" aria-hidden={true}>
-                    Drag to pan · Scroll to zoom
-                </p>
-            </div>
-        );
-    }
+    const startDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+        drag.current = { x: event.clientX, y: event.clientY };
+        event.currentTarget.setPointerCapture(event.pointerId);
+    };
+
+    const moveDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+        const from = drag.current;
+        if (!from) {
+            return;
+        }
+        const dx = event.clientX - from.x;
+        const dy = event.clientY - from.y;
+        drag.current = { x: event.clientX, y: event.clientY };
+        setView( current => ({ ...current, x: current.x + dx, y: current.y + dy }));
+    };
+
+    const endDrag = () => {
+        drag.current = null;
+    };
+
+    const leaves = layout.nodes.filter( node => node.isLeaf ).length;
+
+    return (
+        <div
+            className="tree-flat"
+            ref={host}
+            onPointerDown={startDrag}
+            onPointerMove={moveDrag}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+        >
+            <svg className="tree-flat__canvas" role="img"
+                 aria-label={`Huffman tree, flat view, ${leaves} leaves`}>
+                <g transform={`translate(${view.x} ${view.y}) scale(${view.k})`}>
+                    {layout.edges.map( edge => {
+                        const from = layout.nodes[edge.from];
+                        const to = layout.nodes[edge.to];
+                        const x1 = from.x * SCALE;
+                        const y1 = -from.y * SCALE;
+                        const x2 = to.x * SCALE;
+                        const y2 = -to.y * SCALE;
+                        const isOne = edge.bit === '1';
+
+                        return (
+                            <g key={`${edge.from}-${edge.to}`}>
+                                <line
+                                    className={isOne ? 'tree-flat__edge tree-flat__edge--one'
+                                                     : 'tree-flat__edge'}
+                                    x1={x1} y1={y1} x2={x2} y2={y2}
+                                />
+                                <text
+                                    className={isOne ? 'tree-flat__bit tree-flat__bit--one'
+                                                     : 'tree-flat__bit'}
+                                    x={x1 + (x2 - x1) * 0.42 + (isOne ? 9 : -9)}
+                                    y={y1 + (y2 - y1) * 0.42}
+                                >
+                                    {edge.bit}
+                                </text>
+                            </g>
+                        );
+                    })}
+
+                    {layout.nodes.map( node => {
+                        const symbol = displaySymbol(node.name);
+                        return (
+                            <g key={node.id} transform={`translate(${node.x * SCALE} ${-node.y * SCALE})`}>
+                                <circle
+                                    className={node.isLeaf ? 'tree-flat__leaf' : 'tree-flat__node'}
+                                    r={node.isLeaf ? LEAF_RADIUS : NODE_RADIUS}
+                                />
+                                {node.isLeaf ? (
+                                    <text className="tree-flat__symbol" y={4}>{symbol.glyph}</text>
+                                ) : null}
+                            </g>
+                        );
+                    })}
+                </g>
+            </svg>
+            <p className="tree-flat__hint" aria-hidden={true}>Drag to pan · Scroll to zoom</p>
+        </div>
+    );
 }
-
-export default TreeFlat;

@@ -4,14 +4,14 @@ interface DisplaySymbol {
     isWhitespace: boolean;
 }
 
-const WHITESPACE_NAMES = {
+const WHITESPACE_NAMES: { [sign: string]: string } = {
     ' ': 'space',
     '\n': 'newline',
     '\t': 'tab',
     '\r': 'carriage return'
 };
 
-const WHITESPACE_GLYPHS = {
+const WHITESPACE_GLYPHS: { [sign: string]: string } = {
     ' ': '␣',  // ␣
     '\n': '⏎', // ⏎
     '\t': '⇥', // ⇥

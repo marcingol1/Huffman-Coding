@@ -1,34 +1,26 @@
-import Signs from '../interfaces/Signs';
+import type Signs from '../interfaces/Signs';
 
 function generateRandomLetters(length: number = 0): string {
-    const randomSigns: string = Math
+    return Math
         .random()
         .toString(36)
         .slice(2, length + 2);
-
-    return randomSigns;
 }
 
 function mapLettersToSigns(signs: string[] = []): Signs {
-    let mappedSigns: Signs = {
-        stats: {
-            length: signs.length
-        },
-        signs
-    };
+    const counts: { [sign: string]: number } = {};
 
-    signs.forEach(sign => {
-        if (mappedSigns[sign]) {
-            mappedSigns[sign].count = mappedSigns[sign].count + 1;
-        } else {
-            mappedSigns[sign] = { count: 1 };
-        }
+    signs.forEach( sign => {
+        counts[sign] = (counts[sign] || 0) + 1;
     });
 
-    return mappedSigns;
+    return {
+        stats: { length: signs.length },
+        signs,
+        counts
+    };
 }
 
 export default function generateRandomSigns(randomLetters: string = generateRandomLetters(5)): Signs {
-    const randomLettersArray = randomLetters.split('');
-    return mapLettersToSigns(randomLettersArray);
+    return mapLettersToSigns(randomLetters.split(''));
 }

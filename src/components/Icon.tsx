@@ -1,15 +1,7 @@
-import * as React from 'react';
-
 /*
  * One authored icon set: 24x24 box, 1.5 stroke, round caps and joins.
  * No emoji, no glyph substitutes, no second family mixed in.
  */
-
-interface Props {
-    name: string;
-    size?: number;
-    className?: string;
-}
 
 const PATHS = {
     tree: 'M12 3v5m0 0L6.5 12m5.5-4l5.5 4M6.5 12v3m11-3v3M12 3.8a1.8 1.8 0 100-.1zM6.5 16.4a1.8 1.8 0 100-.1z'
@@ -20,31 +12,33 @@ const PATHS = {
     check: 'M4.5 12.5l5 5 10-11',
     reset: 'M4.5 9.5a8 8 0 1113.6 6.9M4.5 4.5v5h5',
     alert: 'M12 8.5v4.5m0 3.2v.1M4.6 18.5h14.8a1.6 1.6 0 001.4-2.4l-7.4-12.6a1.6 1.6 0 00-2.8 0'
-        + 'L3.2 16.1a1.6 1.6 0 001.4 2.4z',
-    caret: 'M8 5l8 7-8 7'
+        + 'L3.2 16.1a1.6 1.6 0 001.4 2.4z'
 };
 
-class Icon extends React.Component<Props> {
-    render() {
-        const size = this.props.size || 18;
-        return (
-            <svg
-                className={this.props.className}
-                width={size}
-                height={size}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden={true}
-                focusable="false"
-            >
-                <path d={PATHS[this.props.name]}/>
-            </svg>
-        );
-    }
+export type IconName = keyof typeof PATHS;
+
+interface Props {
+    name: IconName;
+    size?: number;
+    className?: string;
 }
 
-export default Icon;
+export default function Icon({ name, size = 18, className }: Props) {
+    return (
+        <svg
+            className={className}
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden={true}
+            focusable="false"
+        >
+            <path d={PATHS[name]}/>
+        </svg>
+    );
+}

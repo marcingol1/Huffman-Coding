@@ -6,17 +6,19 @@ alongside them.
 
 Live demo: https://huffman-coding-dizlu.netlify.com/
 
+Built with Next.js (App Router), React 19 and TypeScript. The page is fully
+static — no server work happens per request — so it deploys to Vercel as-is with
+no configuration.
+
 ## Running it
 
 ```bash
 npm install
-npm start      # dev server on :3000
+npm run dev    # dev server on :3000
 npm test       # jest
-npm run build  # production bundle into build/
+npm run lint   # eslint
+npm run build  # production build
 ```
-
-The scripts set `NODE_OPTIONS=--openssl-legacy-provider` because `react-scripts-ts`
-2.14 predates Node 17's OpenSSL 3 default and its bundler cannot hash otherwise.
 
 ## The interface
 
@@ -27,15 +29,21 @@ The page is a single workspace rather than a form plus a canvas:
 - **Results strip** — space saved, fixed-width size, Huffman size, distinct
   symbols, average code length and entropy, in one instrument panel.
 - **Huffman tree** — a lit Three.js scene you can orbit, pan and zoom (arrow
-  keys, `+` / `-` and `0` work too), with a flat 2D view beside it for scanning.
+  keys and `+` / `-` work too), with a flat SVG view beside it for scanning.
   If WebGL is unavailable the flat view takes over on its own.
 - **Codebook** — every symbol with its count, share, code and code length.
   Whitespace is shown as `␣`, `⏎` and `⇥` so those rows are readable.
 - **Encoded bitstream** — the output in byte-sized groups, with a copy action.
 
-Design tokens, the palette and the typography live in `src/index.css` and are
-recorded in `design-system/huffman-coding/MASTER.md`. The page is dark-only, uses
-one accent, and every piece of text clears WCAG AA contrast on its own surface.
+Design tokens, the palette and the typography live in `src/app/globals.css` and
+are recorded in `design-system/huffman-coding/MASTER.md`. The page is dark-only,
+uses one accent, and every piece of text clears WCAG AA contrast on its own
+surface. The App Router allows global stylesheets only from the root layout, so
+`src/app/layout.tsx` registers every component sheet.
+
+Both tree views are drawn from the same tidy layout in `src/utils/layoutTree.ts`
+— the depth view feeds it to Three.js, the flat view to hand-written SVG — so
+switching between them never moves a node.
 
 ## The algorithm
 
