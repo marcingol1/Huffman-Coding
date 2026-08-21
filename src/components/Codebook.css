@@ -123,7 +123,7 @@
 
 /* One accent, no second hue: a 1-bit is brighter, a 0-bit recedes. */
 .codebook__bit--one {
-    color: var(--accent);
+    color: var(--accent-ink);
     font-weight: 700;
 }
 
@@ -148,6 +148,6 @@
     bottom: 1px;
     height: 26px;
     border-radius: 0 0 var(--radius-control) var(--radius-control);
-    background: linear-gradient(to bottom, rgba(11, 18, 32, 0), rgba(11, 18, 32, 0.95));
+    background: linear-gradient(to bottom, var(--fade-clear), var(--fade));
     pointer-events: none;
 }

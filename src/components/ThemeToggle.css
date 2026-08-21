@@ -1,0 +1,31 @@
+/* Same segmented shape as the tree view switch — one control language, not two. */
+.theme-toggle {
+    display: inline-flex;
+    padding: 2px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-sunken);
+}
+
+.theme-toggle__btn {
+    min-height: 26px;
+    padding: 0 11px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--fg-muted);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.theme-toggle__btn:hover {
+    color: var(--fg);
+}
+
+.theme-toggle__btn.is-active {
+    background: var(--accent);
+    color: var(--on-accent);
+}

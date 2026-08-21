@@ -30,7 +30,7 @@
     bottom: var(--space-sm);
     padding: 4px 10px;
     border-radius: 999px;
-    background: rgba(11, 18, 32, 0.82);
+    background: var(--overlay);
     border: 1px solid var(--border);
     color: var(--fg-subtle);
     font-size: 11.5px;

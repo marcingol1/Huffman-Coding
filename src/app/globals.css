@@ -4,38 +4,65 @@
  * and recorded in design-system/huffman-coding/MASTER.md.
  *
  * Locks that every component honours:
- *   Theme   — dark only. There is no light variant to drift from.
- *   Accent  — one, --accent. Nothing else introduces a hue.
+ *   Theme   — light and dark, one palette each, never mixed. Light is defined on
+ *             bare :root; dark overrides only the colour tokens below it, once
+ *             for the system preference and once for an explicit choice.
+ *   Accent  — one hue. --accent fills, --accent-ink writes. Nothing else adds a hue.
  *   Radius  — panels 12px, controls & inputs 8px, chips & toggles pill.
  *   Shadow  — always an offset plus a soft blur, tinted to the background hue.
+ *
+ * Every text token clears 4.5:1 on every surface token, in both themes.
  */
 
 :root {
-    /* Surfaces, dark to light */
-    --bg: #0F172A;
-    --bg-sunken: #0B1220;
-    --panel: #151E32;
-    --panel-raised: #1B2336;
-    --muted: #272F42;
+    color-scheme: light dark;
 
-    /* Text */
-    /* Three text tiers, all of them at or above 4.5:1 on every surface above. */
-    --fg: #F8FAFC;
-    --fg-muted: #A7B4C7;
-    --fg-subtle: #8B99AE;
+    /* Surfaces, page to raised */
+    --bg: #F1F5F9;
+    --bg-sunken: #E8EEF5;
+    --panel: #FFFFFF;
+    --panel-raised: #F8FAFC;
+    --muted: #E2E8F0;
+
+    /* Three text tiers */
+    --fg: #0F172A;
+    --fg-muted: #475569;
+    --fg-subtle: #586576;
 
     /* Lines. --border is the hairline; --border-strong marks the focused or active edge. */
-    --border: #24304a;
-    --border-strong: #475569;
+    --border: #E2E8F0;
+    --border-strong: #CBD5E1;
 
-    /* The single accent. Locked page-wide. */
-    --accent: #22C55E;
-    --accent-dim: #16A34A;
-    --accent-wash: rgba(34, 197, 94, 0.12);
-    --on-accent: #062012;
+    /* The single accent: --accent fills and strokes, --accent-ink is the readable text. */
+    --accent: #15803D;
+    --accent-ink: #166534;
+    --accent-dim: #166534;
+    --accent-wash: rgba(22, 101, 52, 0.10);
+    --accent-edge: rgba(22, 101, 52, 0.30);
+    --on-accent: #FFFFFF;
 
-    --danger: #EF4444;
-    --danger-wash: rgba(239, 68, 68, 0.12);
+    --danger: #B91C1C;
+    --danger-wash: rgba(185, 28, 28, 0.10);
+    --danger-edge: rgba(185, 28, 28, 0.32);
+
+    /* Compositing colours the components paint with. */
+    --veil: rgba(241, 245, 249, 0.86);
+    --overlay: rgba(255, 255, 255, 0.86);
+    --fade: rgba(232, 238, 245, 0.95);
+    --fade-clear: rgba(232, 238, 245, 0);
+    --leaf-fill: #475569;
+    --leaf-ink: #FFFFFF;
+    /* The tree scenes paint from these rather than borrowing surface tokens,
+       because a node has to read AGAINST the surface, not sit level with it. */
+    --scene-bg: #E8EEF5;
+    --scene-node: #A9B6C7;
+    --scene-edge: #94A3B8;
+    --scene-rim: #FFFFFF;
+    --bit-one-ink: #15803D;
+
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.12);
 
     /* Spacing — density 7/10 */
     --space-xs: 4px;
@@ -48,10 +75,6 @@
     --radius-panel: 12px;
     --radius-control: 8px;
 
-    --shadow-sm: 0 1px 2px rgba(6, 11, 25, 0.6);
-    --shadow-md: 0 4px 12px rgba(6, 11, 25, 0.55);
-    --shadow-lg: 0 18px 40px rgba(6, 11, 25, 0.65);
-
     --font-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
@@ -59,6 +82,97 @@
     --dur: 180ms;
 
     --shell-max: 1440px;
+}
+
+/*
+ * Dark. Declared twice on purpose: once for viewers who never chose, and once
+ * for viewers who picked dark explicitly. Only colour tokens are restated —
+ * spacing, radius, type and easing stay defined once above.
+ */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg: #0F172A;
+        --bg-sunken: #0B1220;
+        --panel: #151E32;
+        --panel-raised: #1B2336;
+        --muted: #272F42;
+
+        --fg: #F8FAFC;
+        --fg-muted: #A7B4C7;
+        --fg-subtle: #8B99AE;
+
+        --border: #24304A;
+        --border-strong: #475569;
+
+        --accent: #22C55E;
+        --accent-ink: #22C55E;
+        --accent-dim: #16A34A;
+        --accent-wash: rgba(34, 197, 94, 0.12);
+        --accent-edge: rgba(34, 197, 94, 0.28);
+        --on-accent: #062012;
+
+        --danger: #EF4444;
+        --danger-wash: rgba(239, 68, 68, 0.12);
+        --danger-edge: rgba(239, 68, 68, 0.35);
+
+        --veil: rgba(15, 23, 42, 0.86);
+        --overlay: rgba(11, 18, 32, 0.82);
+        --fade: rgba(11, 18, 32, 0.95);
+        --fade-clear: rgba(11, 18, 32, 0);
+        --leaf-fill: #A7B4C7;
+        --leaf-ink: #0F172A;
+        --scene-bg: #0B1220;
+        --scene-node: #2A3450;
+        --scene-edge: #3D4A68;
+        --scene-rim: #93A8C4;
+        --bit-one-ink: #4ADE80;
+
+        --shadow-sm: 0 1px 2px rgba(6, 11, 25, 0.6);
+        --shadow-md: 0 4px 12px rgba(6, 11, 25, 0.55);
+        --shadow-lg: 0 18px 40px rgba(6, 11, 25, 0.65);
+    }
+}
+
+:root[data-theme="dark"] {
+    --bg: #0F172A;
+    --bg-sunken: #0B1220;
+    --panel: #151E32;
+    --panel-raised: #1B2336;
+    --muted: #272F42;
+
+    --fg: #F8FAFC;
+    --fg-muted: #A7B4C7;
+    --fg-subtle: #8B99AE;
+
+    --border: #24304A;
+    --border-strong: #475569;
+
+    --accent: #22C55E;
+    --accent-ink: #22C55E;
+    --accent-dim: #16A34A;
+    --accent-wash: rgba(34, 197, 94, 0.12);
+    --accent-edge: rgba(34, 197, 94, 0.28);
+    --on-accent: #062012;
+
+    --danger: #EF4444;
+    --danger-wash: rgba(239, 68, 68, 0.12);
+    --danger-edge: rgba(239, 68, 68, 0.35);
+
+    --veil: rgba(15, 23, 42, 0.86);
+    --overlay: rgba(11, 18, 32, 0.82);
+    --fade: rgba(11, 18, 32, 0.95);
+    --fade-clear: rgba(11, 18, 32, 0);
+    --leaf-fill: #A7B4C7;
+    --leaf-ink: #0F172A;
+    --scene-bg: #0B1220;
+    --scene-node: #2A3450;
+    --scene-edge: #3D4A68;
+    --scene-rim: #93A8C4;
+    --bit-one-ink: #4ADE80;
+
+    --shadow-sm: 0 1px 2px rgba(6, 11, 25, 0.6);
+    --shadow-md: 0 4px 12px rgba(6, 11, 25, 0.55);
+    --shadow-lg: 0 18px 40px rgba(6, 11, 25, 0.65);
 }
 
 *,
@@ -314,11 +428,11 @@ p {
 .notice--info {
     background: var(--accent-wash);
     color: var(--fg);
-    border: 1px solid rgba(34, 197, 94, 0.28);
+    border: 1px solid var(--accent-edge);
 }
 
 .notice--info svg {
-    color: var(--accent);
+    color: var(--accent-ink);
     flex: none;
     margin-top: 2px;
 }
@@ -326,7 +440,7 @@ p {
 .notice--error {
     background: var(--danger-wash);
     color: var(--fg);
-    border: 1px solid rgba(239, 68, 68, 0.35);
+    border: 1px solid var(--danger-edge);
 }
 
 .notice--error svg {

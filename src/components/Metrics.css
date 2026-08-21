@@ -52,7 +52,7 @@
 }
 
 .metrics__cell--accent .metrics__value {
-    color: var(--accent);
+    color: var(--accent-ink);
 }
 
 .metrics__value--empty,

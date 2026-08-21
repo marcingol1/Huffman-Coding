@@ -10,7 +10,7 @@
     top: 0;
     z-index: 20;
     border-bottom: 1px solid var(--border);
-    background: rgba(15, 23, 42, 0.86);
+    background: var(--veil);
     backdrop-filter: blur(10px);
 }
 
@@ -33,12 +33,18 @@
 }
 
 .app__wordmark-dot {
-    color: var(--accent);
+    color: var(--accent-ink);
 }
 
 .app__tagline {
     color: var(--fg-muted);
     font-size: 13.5px;
+}
+
+/* Pushes the theme control to the trailing edge without a wrapper element. */
+.app__header-inner > .theme-toggle {
+    margin-left: auto;
+    align-self: center;
 }
 
 .app__main {
