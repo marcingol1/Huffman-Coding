@@ -1,5 +1,336 @@
+/*
+ * Design tokens — Huffman Coding
+ * Generated from ui-ux-pro-max `--design-system` (Developer Tool / IDE, Dark Mode OLED)
+ * and recorded in design-system/huffman-coding/MASTER.md.
+ *
+ * Locks that every component honours:
+ *   Theme   — dark only. There is no light variant to drift from.
+ *   Accent  — one, --accent. Nothing else introduces a hue.
+ *   Radius  — panels 12px, controls & inputs 8px, chips & toggles pill.
+ *   Shadow  — always an offset plus a soft blur, tinted to the background hue.
+ */
+
+:root {
+    /* Surfaces, dark to light */
+    --bg: #0F172A;
+    --bg-sunken: #0B1220;
+    --panel: #151E32;
+    --panel-raised: #1B2336;
+    --muted: #272F42;
+
+    /* Text */
+    /* Three text tiers, all of them at or above 4.5:1 on every surface above. */
+    --fg: #F8FAFC;
+    --fg-muted: #A7B4C7;
+    --fg-subtle: #8B99AE;
+
+    /* Lines. --border is the hairline; --border-strong marks the focused or active edge. */
+    --border: #24304a;
+    --border-strong: #475569;
+
+    /* The single accent. Locked page-wide. */
+    --accent: #22C55E;
+    --accent-dim: #16A34A;
+    --accent-wash: rgba(34, 197, 94, 0.12);
+    --on-accent: #062012;
+
+    --danger: #EF4444;
+    --danger-wash: rgba(239, 68, 68, 0.12);
+
+    /* Spacing — density 7/10 */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+
+    --radius-panel: 12px;
+    --radius-control: 8px;
+
+    --shadow-sm: 0 1px 2px rgba(6, 11, 25, 0.6);
+    --shadow-md: 0 4px 12px rgba(6, 11, 25, 0.55);
+    --shadow-lg: 0 18px 40px rgba(6, 11, 25, 0.65);
+
+    --font-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+    --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+    --dur: 180ms;
+
+    --shell-max: 1440px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--bg);
+    -webkit-text-size-adjust: 100%;
+}
+
 body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4 {
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+p {
+    margin: 0;
+}
+
+/* Every number in this app is compared against the number beside it. */
+.num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+}
+
+/*
+ * Browser surfaces. Selection, caret, scrollbars and focus rings ship with
+ * defaults that belong to no design system — they get the palette too.
+ */
+::selection {
+    background: var(--accent-wash);
+    color: var(--fg);
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--muted);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--border-strong);
+    background-clip: padding-box;
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Older engines without :focus-visible still get a ring rather than nothing. */
+.no-focus-visible :focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ---------------------------------------------------------------- primitives */
+
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow-sm);
+    min-width: 0;
+}
+
+.panel__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-md) var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.panel__title {
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.panel__title svg {
+    color: var(--fg-subtle);
+    flex: none;
+}
+
+.panel__meta {
+    font-size: 12.5px;
+    color: var(--fg-muted);
+}
+
+.panel__body {
+    padding: 0 var(--space-md) var(--space-md);
+}
+
+/* Buttons — 8px radius, 36px min height, label always on one line. */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    min-height: 36px;
+    padding: 0 var(--space-md);
+    border-radius: var(--radius-control);
+    border: 1px solid var(--border-strong);
+    background: var(--panel-raised);
+    color: var(--fg);
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease),
+                transform var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.btn:hover {
+    background: var(--muted);
+    border-color: var(--fg-subtle);
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn--accent {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+}
+
+.btn--accent:hover {
+    background: var(--accent-dim);
+    border-color: var(--accent-dim);
+}
+
+.btn--quiet {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--fg-muted);
+}
+
+.btn--quiet:hover {
+    color: var(--fg);
+    background: var(--muted);
+}
+
+.btn--sm {
+    min-height: 30px;
+    padding: 0 var(--space-sm);
+    font-size: 12.5px;
+}
+
+/* Empty states share one shape so a page with two of them still reads as one app. */
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-xl) var(--space-md);
+    text-align: center;
+    color: var(--fg-muted);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-control);
+    background: var(--bg-sunken);
+}
+
+.empty__title {
+    color: var(--fg);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.empty__hint {
+    font-size: 13px;
+    max-width: 42ch;
+}
+
+.notice {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-control);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.notice--info {
+    background: var(--accent-wash);
+    color: var(--fg);
+    border: 1px solid rgba(34, 197, 94, 0.28);
+}
+
+.notice--info svg {
+    color: var(--accent);
+    flex: none;
+    margin-top: 2px;
+}
+
+.notice--error {
+    background: var(--danger-wash);
+    color: var(--fg);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.notice--error svg {
+    color: var(--danger);
+    flex: none;
+    margin-top: 2px;
 }

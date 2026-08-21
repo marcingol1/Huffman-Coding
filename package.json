@@ -3,16 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
     "lodash": "^4.17.10",
     "react": "^16.3.1",
     "react-d3-tree": "^1.10.4",
     "react-dom": "^16.3.1",
-    "react-scripts-ts": "2.14.0"
+    "react-scripts-ts": "2.14.0",
+    "three": "^0.124.0"
   },
   "scripts": {
-    "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
+    "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts-ts start",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider react-scripts-ts build",
+    "test": "NODE_OPTIONS=--openssl-legacy-provider react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {

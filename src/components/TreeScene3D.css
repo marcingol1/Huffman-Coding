@@ -1,0 +1,53 @@
+.scene3d {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-control);
+    overflow: hidden;
+    background: var(--bg-sunken);
+    cursor: grab;
+    touch-action: none;
+}
+
+.scene3d:active {
+    cursor: grabbing;
+}
+
+.scene3d__canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.scene3d__canvas:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+}
+
+.scene3d__hint {
+    position: absolute;
+    left: var(--space-sm);
+    bottom: var(--space-sm);
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(11, 18, 32, 0.82);
+    border: 1px solid var(--border);
+    color: var(--fg-subtle);
+    font-size: 11.5px;
+    pointer-events: none;
+}
+
+/* Touch users are the ones who most need to be told the view is interactive. */
+.scene3d__hint-short {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .scene3d__hint-full {
+        display: none;
+    }
+
+    .scene3d__hint-short {
+        display: inline;
+    }
+}
