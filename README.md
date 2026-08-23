@@ -72,9 +72,8 @@ switching between them never moves a node.
 
 ## The algorithms
 
-Two coders, switchable in the page. Both produce a binary prefix code, so the
-tree view, the codebook and the bitstream are the same machinery either way —
-only `src/utils/trees.ts` differs between them.
+Three coders, switchable in the page. Two of them build a tree and share all
+the same machinery; the third works on a different principle entirely.
 
 - **Huffman** builds upward: repeatedly merge the two least probable nodes still
   in the queue, internal nodes included, until one root remains. Optimal — no
@@ -84,9 +83,25 @@ only `src/utils/trees.ts` differs between them.
   Splitting top-down cannot see what a split costs further down, so it ties
   Huffman or loses to it, never wins.
 
-The `Coder gap` sample is the smallest input where they disagree: counts
-5,2,2,2,2 cost 29 bits under Huffman and 30 under Shannon–Fano. Codes come from
-the walk down, `0` left and `1` right.
+Codes come from the walk down, `0` left and `1` right. The `Coder gap` sample is
+the smallest input where the two disagree: counts 5,2,2,2,2 cost 29 bits under
+Huffman and 30 under Shannon–Fano.
+
+- **LZW** codes repeated *phrases* rather than single symbols. Each phrase it
+  emits teaches the dictionary that phrase plus one more symbol, and codes are
+  written at whatever width the dictionary currently needs. It replaces the tree
+  view with a phrase stream and the codebook with a dictionary.
+
+The dictionary is seeded with the symbols the text actually uses, not all 256
+bytes — a full byte table would spend nine bits on the first code of a
+four-letter alphabet, which says more about the seeding than the algorithm.
+
+LZW is the reason the entropy tile changes wording with the coder. Shannon's
+order-0 bound only constrains codes that spend a fixed codeword per symbol, so
+Huffman and Shannon–Fano can never average below it. LZW models sequences, and
+on the `Buffalo` sample it averages 2.406 bits per character against an entropy
+of 2.937 — below a floor that was never its floor. It loses badly on text with
+little repetition: on `Sentence` it needs 285 bits where Huffman needs 221.
 
 Edge cases are handled rather than thrown: empty input produces an empty
 codebook, and a single distinct symbol falls back to one bit per symbol. Both are

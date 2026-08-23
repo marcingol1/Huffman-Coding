@@ -3,7 +3,7 @@
 import { CODERS, type Coder } from '../utils/trees';
 import './CoderSwitch.css';
 
-const ORDER: Coder[] = ['huffman', 'shannon-fano'];
+const ORDER: Coder[] = ['huffman', 'shannon-fano', 'lzw'];
 
 interface Props {
     coder: Coder;

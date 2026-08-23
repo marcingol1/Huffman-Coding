@@ -1,8 +1,9 @@
 import SymbolCoding from './coding';
 import generateRandomSigns from './generateRandomSigns';
-import type { Coder } from './trees';
+import type { TreeCoder } from './trees';
+import lzw from './lzw';
 
-function build(text: string, coder: Coder = 'huffman'): SymbolCoding {
+function build(text: string, coder: TreeCoder = 'huffman'): SymbolCoding {
     return new SymbolCoding(generateRandomSigns(text), coder);
 }
 
@@ -124,5 +125,67 @@ describe('SymbolCoding, Shannon–Fano', () => {
             .toEqual([{ sign: 'a', code: '0', count: 4, p: 1 }]);
         expect(build('', 'shannon-fano').nodeCodes).toEqual([]);
         expect(build('', 'shannon-fano').serializeGraph()).toEqual([]);
+    });
+});
+
+describe('LZW', () => {
+    it('seeds the dictionary with the alphabet the text actually uses', () => {
+        const result = lzw('abcdabcdabcdabcd');
+        expect(result.alphabet).toEqual(['a', 'b', 'c', 'd']);
+        expect(result.entries.slice(0, 4).map( entry => entry.phrase )).toEqual(['a', 'b', 'c', 'd']);
+        expect(result.entries.slice(0, 4).every( entry => entry.seeded )).toBe(true);
+    });
+
+    it('emits phrases that reconstruct the source in order', () => {
+        const text = 'Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo.';
+        const result = lzw(text);
+        expect(result.steps.map( step => step.phrase ).join('')).toBe(text);
+    });
+
+    it('writes each code at the width the dictionary needed at that moment', () => {
+        const result = lzw('abcdabcdabcdabcd');
+        const widths = result.steps.reduce( (total, step) => total + step.width, 0);
+        expect(result.bits.length).toBe(widths);
+        expect(result.bits).toMatch(/^[01]+$/);
+        // Widths never shrink: the dictionary only grows.
+        result.steps.forEach( (step, index) => {
+            if (index > 0) {
+                expect(step.width).toBeGreaterThanOrEqual(result.steps[index - 1].width);
+            }
+        });
+    });
+
+    it('every emitted code addresses an entry that already existed', () => {
+        const result = lzw('Betty Botter bought some butter');
+        const byCode = new Map(result.entries.map( entry => [entry.code, entry.phrase] ));
+        result.steps.forEach( step => {
+            expect(byCode.get(step.code)).toBe(step.phrase);
+            expect(step.code).toBeLessThan(1 << step.width);
+        });
+    });
+
+    /* The reason LZW is worth showing beside the tree coders: it models
+       sequences, so the per-symbol entropy bound does not hold it back. */
+    it('beats Huffman and the order-0 entropy on repetitive text', () => {
+        const text = 'Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo.';
+        const huffman = build(text, 'huffman');
+        const bits = lzw(text).bits.length;
+
+        expect(bits).toBe(154);
+        expect(bits).toBeLessThan(huffman.encode(text).length);
+        expect(bits / text.length).toBeLessThan(huffman.countGraphEntropy());
+    });
+
+    it('loses to Huffman on text with little repetition', () => {
+        const text = 'huffman coding turns frequent symbols into short codes';
+        expect(lzw(text).bits.length)
+            .toBeGreaterThan(build(text, 'huffman').encode(text).length);
+    });
+
+    it('survives empty input', () => {
+        const result = lzw('');
+        expect(result.bits).toBe('');
+        expect(result.steps).toEqual([]);
+        expect(result.entries).toEqual([]);
     });
 });

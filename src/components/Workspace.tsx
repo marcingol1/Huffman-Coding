@@ -1,12 +1,13 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import SymbolCoding from '../utils/coding';
-import generateRandomSigns from '../utils/generateRandomSigns';
+import encodeText from '../utils/encoding';
 import Composer from './Composer';
 import CoderSwitch from './CoderSwitch';
 import Metrics from './Metrics';
 import Codebook from './Codebook';
+import Dictionary from './Dictionary';
+import PhraseStream from './PhraseStream';
 import TreePanel from './TreePanel';
 import EncodedOutput from './EncodedOutput';
 import { CODERS, type Coder } from '../utils/trees';
@@ -21,11 +22,7 @@ export default function Workspace() {
     const [coder, setCoder] = useState<Coder>('huffman');
 
     // Derived, not stored — there is no second copy of this to keep in sync.
-    const coding = useMemo(
-        () => new SymbolCoding(generateRandomSigns(text), coder),
-        [text, coder]
-    );
-    const encoded = useMemo(() => coding.encode(text), [coding, text]);
+    const encoding = useMemo(() => encodeText(text, coder), [text, coder]);
 
     const originalBits = text.length * FIXED_WIDTH_BITS;
 
@@ -54,26 +51,48 @@ export default function Workspace() {
 
                 <Metrics
                     coderLabel={CODERS[coder].label}
-                    symbolCount={coding.nodeCodes.length}
+                    buildsTree={CODERS[coder].buildsTree}
+                    symbolCount={encoding.symbolCount}
                     originalBits={originalBits}
-                    encodedBits={encoded.length}
-                    averageLength={coding.codingLength}
-                    entropy={coding.countGraphEntropy()}
+                    encodedBits={encoding.encoded.length}
+                    averageLength={encoding.averageLength}
+                    entropy={encoding.entropy}
                 />
 
                 <div className="app__grid">
-                    <TreePanel coding={coding}/>
+                    {encoding.tree ? (
+                        <TreePanel coding={encoding.tree}/>
+                    ) : (
+                        <PhraseStream result={encoding.dictionary!}/>
+                    )}
                     <div className="app__column">
-                        <Codebook nodeCodes={coding.nodeCodes} totalSigns={text.length}/>
-                        <EncodedOutput encoded={encoded} originalBits={originalBits}/>
+                        {encoding.tree ? (
+                            <Codebook nodeCodes={encoding.tree.nodeCodes} totalSigns={text.length}/>
+                        ) : (
+                            <Dictionary result={encoding.dictionary!}/>
+                        )}
+                        <EncodedOutput
+                            encoded={encoding.encoded}
+                            originalBits={originalBits}
+                        />
                     </div>
                 </div>
             </main>
 
             <footer className="app__footer">
                 <p>
-                    Codes are assigned by walking the tree: <code className="app__bit">0</code> takes
-                    the left branch, <code className="app__bit">1</code> takes the right.
+                    {CODERS[coder].buildsTree ? (
+                        <>
+                            Codes are assigned by walking the tree:{' '}
+                            <code className="app__bit">0</code> takes the left branch,{' '}
+                            <code className="app__bit">1</code> takes the right.{' '}
+                        </>
+                    ) : (
+                        <>
+                            Each code addresses a dictionary phrase, written at the width the
+                            dictionary needs at that moment.{' '}
+                        </>
+                    )}
                     Comparison baseline is {FIXED_WIDTH_BITS} bits per character.
                 </p>
             </footer>

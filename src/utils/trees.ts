@@ -1,22 +1,32 @@
 import Sign from './Sign';
 import GraphNode from './GraphNode';
 
-export type Coder = 'huffman' | 'shannon-fano';
+export type Coder = 'huffman' | 'shannon-fano' | 'lzw';
 
 export interface CoderInfo {
     label: string;
-    /** One line on how this coder decides the tree, shown beside the switch. */
+    /** One line on how this coder works, shown beside the switch. */
     rule: string;
+    /** LZW codes sequences, not symbols, so it has no tree and no per-symbol codebook. */
+    buildsTree: boolean;
 }
 
 export const CODERS: Record<Coder, CoderInfo> = {
     'huffman': {
         label: 'Huffman',
-        rule: 'Builds upward: repeatedly merges the two least probable nodes until one root is left.'
+        rule: 'Builds upward: repeatedly merges the two least probable nodes until one root is left.',
+        buildsTree: true
     },
     'shannon-fano': {
         label: 'Shannon–Fano',
-        rule: 'Builds downward: sorts the symbols, then splits them at the most even point, over and over.'
+        rule: 'Builds downward: sorts the symbols, then splits them at the most even point, over and over.',
+        buildsTree: true
+    },
+    'lzw': {
+        label: 'LZW',
+        rule: 'Codes repeated phrases, not single symbols: every phrase it emits teaches the '
+            + 'dictionary a longer one.',
+        buildsTree: false
     }
 };
 
@@ -94,7 +104,9 @@ export function buildShannonFanoTree(nodes: GraphNode[]): GraphNode | undefined 
     return sorted.length ? split(sorted) : undefined;
 }
 
-export const TREE_BUILDERS: Record<Coder, (nodes: GraphNode[]) => GraphNode | undefined> = {
+export type TreeCoder = 'huffman' | 'shannon-fano';
+
+export const TREE_BUILDERS: Record<TreeCoder, (nodes: GraphNode[]) => GraphNode | undefined> = {
     'huffman': buildHuffmanTree,
     'shannon-fano': buildShannonFanoTree
 };

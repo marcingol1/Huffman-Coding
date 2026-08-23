@@ -15,6 +15,8 @@ import '../components/Composer.css';
 import '../components/CoderSwitch.css';
 import '../components/Metrics.css';
 import '../components/Codebook.css';
+import '../components/Dictionary.css';
+import '../components/PhraseStream.css';
 import '../components/TreePanel.css';
 import '../components/TreeScene3D.css';
 import '../components/TreeFlat.css';

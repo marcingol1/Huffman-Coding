@@ -1,7 +1,7 @@
 import Sign from './Sign';
 import generateRandomSigns from './generateRandomSigns';
 import GraphNode from './GraphNode';
-import { TREE_BUILDERS, type Coder } from './trees';
+import { TREE_BUILDERS, type TreeCoder } from './trees';
 import type Signs from '../interfaces/Signs';
 
 interface SerializedNode {
@@ -26,7 +26,7 @@ interface NodeCode {
  * differs between them.
  */
 class SymbolCoding {
-    coder: Coder;
+    coder: TreeCoder;
     initialData: Signs;
     dataSigns: Sign[];
     graphNodes: GraphNode[];
@@ -35,7 +35,7 @@ class SymbolCoding {
     nodeCodes: NodeCode[];
     codingLength: number;
 
-    constructor(initialData: Signs = generateRandomSigns('asdasdasdasd'), coder: Coder = 'huffman') {
+    constructor(initialData: Signs = generateRandomSigns('asdasdasdasd'), coder: TreeCoder = 'huffman') {
         this.coder = coder;
         this.initialData = initialData;
         this.dataSigns = initialData

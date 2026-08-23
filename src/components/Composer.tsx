@@ -34,7 +34,7 @@ export default function Composer({ text, maxLength, onChange }: Props) {
                     Text to encode
                 </label>
                 <p className="composer__helper" id="source-text-help">
-                    The tree, the codebook and the bitstream all rebuild as you type.
+                    Everything below rebuilds as you type.
                 </p>
                 <textarea
                     id="source-text"
