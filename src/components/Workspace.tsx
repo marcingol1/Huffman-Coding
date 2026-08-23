@@ -6,8 +6,8 @@ import Composer from './Composer';
 import CoderSwitch from './CoderSwitch';
 import Metrics from './Metrics';
 import Codebook from './Codebook';
-import Dictionary from './Dictionary';
-import PhraseStream from './PhraseStream';
+import DetailTable from './DetailTable';
+import Stream from './Stream';
 import TreePanel from './TreePanel';
 import EncodedOutput from './EncodedOutput';
 import { CODERS, type Coder } from '../utils/trees';
@@ -52,6 +52,7 @@ export default function Workspace() {
                 <Metrics
                     coderLabel={CODERS[coder].label}
                     buildsTree={CODERS[coder].buildsTree}
+                    perSymbol={CODERS[coder].perSymbol}
                     symbolCount={encoding.symbolCount}
                     originalBits={originalBits}
                     encodedBits={encoding.encoded.length}
@@ -63,13 +64,13 @@ export default function Workspace() {
                     {encoding.tree ? (
                         <TreePanel coding={encoding.tree}/>
                     ) : (
-                        <PhraseStream result={encoding.dictionary!}/>
+                        <Stream coding={encoding.stream!}/>
                     )}
                     <div className="app__column">
                         {encoding.tree ? (
                             <Codebook nodeCodes={encoding.tree.nodeCodes} totalSigns={text.length}/>
                         ) : (
-                            <Dictionary result={encoding.dictionary!}/>
+                            <DetailTable detail={encoding.stream!.detail}/>
                         )}
                         <EncodedOutput
                             encoded={encoding.encoded}
@@ -88,10 +89,7 @@ export default function Workspace() {
                             <code className="app__bit">1</code> takes the right.{' '}
                         </>
                     ) : (
-                        <>
-                            Each code addresses a dictionary phrase, written at the width the
-                            dictionary needs at that moment.{' '}
-                        </>
+                        <>{CODERS[coder].footer}{' '}</>
                     )}
                     Comparison baseline is {FIXED_WIDTH_BITS} bits per character.
                 </p>

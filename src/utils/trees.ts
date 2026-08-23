@@ -1,32 +1,73 @@
 import Sign from './Sign';
 import GraphNode from './GraphNode';
 
-export type Coder = 'huffman' | 'shannon-fano' | 'lzw';
+export type Coder = 'huffman' | 'shannon-fano' | 'arithmetic' | 'lzw' | 'lz77' | 'rle';
 
 export interface CoderInfo {
     label: string;
     /** One line on how this coder works, shown beside the switch. */
     rule: string;
-    /** LZW codes sequences, not symbols, so it has no tree and no per-symbol codebook. */
+    /** Only the tree coders get the tree view and the codebook. */
     buildsTree: boolean;
+    /**
+     * True when the coder spends a codeword per symbol, which is exactly the
+     * class Shannon's order-0 bound constrains. The sequence and run coders are
+     * not held to it and can go below.
+     */
+    perSymbol: boolean;
+    /** How this coder's bitstream should be read, for the page footer. */
+    footer: string;
 }
 
 export const CODERS: Record<Coder, CoderInfo> = {
     'huffman': {
         label: 'Huffman',
         rule: 'Builds upward: repeatedly merges the two least probable nodes until one root is left.',
-        buildsTree: true
+        buildsTree: true,
+        perSymbol: true,
+        footer: 'Codes are assigned by walking the tree.'
     },
     'shannon-fano': {
         label: 'Shannon–Fano',
         rule: 'Builds downward: sorts the symbols, then splits them at the most even point, over and over.',
-        buildsTree: true
+        buildsTree: true,
+        perSymbol: true,
+        footer: 'Codes are assigned by walking the tree.'
+    },
+    'arithmetic': {
+        label: 'Arithmetic',
+        rule: 'Turns the whole message into one number: each symbol narrows an interval by its '
+            + 'probability, so a symbol can cost a fraction of a bit.',
+        buildsTree: false,
+        perSymbol: true,
+        footer: 'The bitstream names a point inside the final interval — nothing is written until the '
+            + 'interval commits to a half.'
     },
     'lzw': {
         label: 'LZW',
         rule: 'Codes repeated phrases, not single symbols: every phrase it emits teaches the '
             + 'dictionary a longer one.',
-        buildsTree: false
+        buildsTree: false,
+        perSymbol: false,
+        footer: 'Each code addresses a dictionary phrase, written at the width the dictionary needs at '
+            + 'that moment.'
+    },
+    'lz77': {
+        label: 'LZ77',
+        rule: 'Points backwards instead of remembering: each token is either a literal or a '
+            + 'reference to text already sent.',
+        buildsTree: false,
+        perSymbol: false,
+        footer: 'Each token is either a literal or an offset and length pointing back into text already '
+            + 'sent.'
+    },
+    'rle': {
+        label: 'RLE',
+        rule: 'Ignores frequency entirely and just counts repeats — unbeatable on runs, '
+            + 'ruinous on anything else.',
+        buildsTree: false,
+        perSymbol: false,
+        footer: 'Each pair is a run length and a symbol, eight bits each.'
     }
 };
 

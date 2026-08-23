@@ -23,7 +23,9 @@ const SAMPLE_GROUPS: SampleGroup[] = [
             { label: 'Even split', value: 'abcdabcdabcdabcd' },
             { label: 'DNA', value: 'GATTACAGATTACAGGGTTTACCA' },
             // The smallest distribution on which Huffman and Shannon-Fano disagree.
-            { label: 'Coder gap', value: 'aaaaabbccddee' }
+            { label: 'Coder gap', value: 'aaaaabbccddee' },
+            // Three long runs: the one shape run-length encoding is built for.
+            { label: 'Runs', value: 'a'.repeat(30) + 'b'.repeat(20) + 'c'.repeat(14) }
         ]
     },
     {

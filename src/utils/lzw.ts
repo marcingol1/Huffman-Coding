@@ -1,3 +1,6 @@
+import { displayPhrase } from './format';
+import type { StreamCoding } from './stream';
+
 export interface LzwEntry {
     code: number;
     phrase: string;
@@ -84,4 +87,42 @@ export default function lzw(text: string): LzwResult {
     }
 
     return { alphabet, entries, steps, bits };
+}
+
+/** The LZW result dressed in the shape the stream and table components read. */
+export function lzwCoding(text: string): StreamCoding {
+    const result = lzw(text);
+    const learned = result.entries.length - result.alphabet.length;
+
+    return {
+        bits: result.bits,
+        streamTitle: 'Phrase stream',
+        streamMeta: `${result.steps.length} ${result.steps.length === 1 ? 'phrase' : 'phrases'}`
+            + (learned > 0 ? ` · ${learned} learned` : ''),
+        streamNote: 'Every phrase costs only as many bits as the dictionary needs to address '
+            + 'itself, so early codes are cheap and later ones cover more text.',
+        stream: result.steps.map( step => ({
+            label: displayPhrase(step.phrase),
+            code: '#' + step.code,
+            bits: step.width,
+            note: step.learned
+                ? `learned #${step.learned.code} ${displayPhrase(step.learned.phrase)}`
+                : 'final flush'
+        })),
+        detail: {
+            title: 'Dictionary',
+            columns: ['Code', 'Phrase', 'Origin'],
+            rows: result.entries.map( entry => [
+                String(entry.code),
+                displayPhrase(entry.phrase),
+                entry.seeded ? 'alphabet' : 'learned'
+            ]),
+            numeric: [0],
+            mono: [1],
+            meta: `${result.alphabet.length} seeded`
+                + (learned > 0 ? ` · ${learned} learned` : ''),
+            note: 'None of this is sent. The decoder rebuilds the same dictionary in the same '
+                + 'order from the codes alone — only the alphabet has to be agreed in advance.'
+        }
+    };
 }

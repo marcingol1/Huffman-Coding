@@ -72,39 +72,52 @@ switching between them never moves a node.
 
 ## The algorithms
 
-Three coders, switchable in the page. Two of them build a tree and share all
-the same machinery; the third works on a different principle entirely.
+Six coders, switchable in the page, from four different principles. Every one of
+them wins on some input, which is the point: compression is a question about the
+data, not a league table.
 
-- **Huffman** builds upward: repeatedly merge the two least probable nodes still
-  in the queue, internal nodes included, until one root remains. Optimal — no
-  prefix code has a shorter weighted average.
-- **Shannon–Fano** builds downward: sort by probability, cut the list where the
-  two halves are closest in weight, give one side `0` and the other `1`, recurse.
-  Splitting top-down cannot see what a split costs further down, so it ties
-  Huffman or loses to it, never wins.
+| Coder | Principle | Wins when |
+|---|---|---|
+| **Huffman** | per-symbol prefix code, built upward by merging the two least probable nodes | almost always, on short or low-repetition text |
+| **Shannon–Fano** | per-symbol prefix code, built downward by splitting at the most even point | never — it ties Huffman or loses, which is the lesson |
+| **Arithmetic** | one number for the whole message; each symbol narrows an interval | long prose, where Huffman's rounding to whole bits accumulates |
+| **LZW** | codes repeated phrases, learning a longer one each time | repetitive text, once phrases get long enough to pay |
+| **LZ77** | points backwards into text already sent, no dictionary kept | heavy repetition within its 255-character window |
+| **RLE** | counts repeats and ignores frequency entirely | actual runs — and only those |
 
-Codes come from the walk down, `0` left and `1` right. The `Coder gap` sample is
-the smallest input where the two disagree: counts 5,2,2,2,2 cost 29 bits under
-Huffman and 30 under Shannon–Fano.
+Only the two tree coders share machinery. They differ in `src/utils/trees.ts`
+alone, and keep the tree view and the codebook. The other four emit a stream of
+tokens and a table beside it, so one pair of components serves all of them.
 
-- **LZW** codes repeated *phrases* rather than single symbols. Each phrase it
-  emits teaches the dictionary that phrase plus one more symbol, and codes are
-  written at whatever width the dictionary currently needs. It replaces the tree
-  view with a phrase stream and the codebook with a dictionary.
+Some figures the samples produce, in bits:
 
-The dictionary is seeded with the symbols the text actually uses, not all 256
-bytes — a full byte table would spend nine bits on the first code of a
-four-letter alphabet, which says more about the seeding than the algorithm.
+```
+              fixed  Huffman  Arith   LZW   LZ77    RLE
+Buffalo         512      189    189   154    142    896
+Runs            512       98     99    73     88     48
+Macbeth        1480      769    760   931   1240   2832
+```
 
-LZW is the reason the entropy tile changes wording with the coder. Shannon's
-order-0 bound only constrains codes that spend a fixed codeword per symbol, so
-Huffman and Shannon–Fano can never average below it. LZW models sequences, and
-on the `Buffalo` sample it averages 2.406 bits per character against an entropy
-of 2.937 — below a floor that was never its floor. It loses badly on text with
-little repetition: on `Sentence` it needs 285 bits where Huffman needs 221.
+The `Coder gap` sample is the smallest input where Huffman and Shannon–Fano
+disagree: counts 5,2,2,2,2 cost 29 bits against 30.
+
+### Two things the comparison exposes
+
+**LZW's dictionary is seeded with the symbols the text actually uses**, not all
+256 bytes. A full byte table would spend nine bits on the first code of a
+four-letter alphabet, and the comparison would measure the seeding rather than
+the algorithm — 440 bits instead of 285 on the `Sentence` sample.
+
+**The entropy tile changes wording with the coder.** Shannon's order-0 bound
+only constrains coders that spend a codeword per symbol, so Huffman,
+Shannon–Fano and arithmetic can never average below it. LZW, LZ77 and RLE model
+sequences and runs, and go under it freely — RLE averages 0.75 bits per
+character on `Runs` against an entropy of 1.516.
 
 Edge cases are handled rather than thrown: empty input produces an empty
-codebook, and a single distinct symbol falls back to one bit per symbol. Both are
-covered in `src/utils/coding.test.ts` for both coders, along with checks that
-each codebook stays prefix-free, that neither averages fewer bits per symbol than
-the entropy, and that Shannon–Fano is never shorter than Huffman.
+codebook, and a single distinct symbol falls back to one bit per symbol.
+
+`src/utils/coding.test.ts` covers the tree coders — prefix-freeness, the entropy
+bound, and Shannon–Fano never beating Huffman. `src/utils/coders.test.ts` covers
+the other four against reference implementations, including each one's winning
+case and its losing case.

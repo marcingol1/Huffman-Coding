@@ -1,5 +1,9 @@
 import SymbolCoding from './coding';
-import lzw, { type LzwResult } from './lzw';
+import { lzwCoding } from './lzw';
+import arithmetic from './arithmetic';
+import lz77 from './lz77';
+import rle from './rle';
+import type { StreamCoding } from './stream';
 import generateRandomSigns from './generateRandomSigns';
 import { CODERS, type Coder, type TreeCoder } from './trees';
 import type Signs from '../interfaces/Signs';
@@ -14,8 +18,8 @@ export interface Encoding {
     entropy: number;
     /** Present only for the coders that build a tree. */
     tree?: SymbolCoding;
-    /** Present only for LZW. */
-    dictionary?: LzwResult;
+    /** Present for every coder that does not build a tree. */
+    stream?: StreamCoding;
 }
 
 /** Order-0 entropy of the source: a property of the text, not of the coder. */
@@ -30,6 +34,13 @@ function entropyOf(signs: Signs): number {
         return p > 0 ? entropy + p * Math.log2(1 / p) : entropy;
     }, 0);
 }
+
+const STREAM_CODERS: { [key: string]: (text: string) => StreamCoding } = {
+    'arithmetic': arithmetic,
+    'lzw': lzwCoding,
+    'lz77': lz77,
+    'rle': rle
+};
 
 export default function encodeText(text: string, coder: Coder): Encoding {
     const signs = generateRandomSigns(text);
@@ -49,13 +60,13 @@ export default function encodeText(text: string, coder: Coder): Encoding {
         };
     }
 
-    const dictionary = lzw(text);
+    const stream = STREAM_CODERS[coder](text);
     return {
         coder,
-        encoded: dictionary.bits,
-        symbolCount: dictionary.alphabet.length,
-        averageLength: perCharacter(dictionary.bits.length),
+        encoded: stream.bits,
+        symbolCount: Object.keys(signs.counts).length,
+        averageLength: perCharacter(stream.bits.length),
         entropy,
-        dictionary
+        stream
     };
 }
