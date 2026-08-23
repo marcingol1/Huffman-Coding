@@ -389,6 +389,46 @@ p {
     font-size: 12.5px;
 }
 
+/* One segmented control for the whole app: theme, coder, tree view. */
+.segmented {
+    display: inline-flex;
+    padding: 2px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-sunken);
+}
+
+.segmented__btn {
+    min-height: 28px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--fg-muted);
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+/* Not the active segment: it already sits on the accent fill, and --fg over
+   that fails contrast. */
+.segmented__btn:hover:not(:disabled):not(.is-active) {
+    color: var(--fg);
+}
+
+.segmented__btn.is-active {
+    background: var(--accent);
+    color: var(--on-accent);
+}
+
+.segmented__btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 /* Empty states share one shape so a page with two of them still reads as one app. */
 .empty {
     display: flex;

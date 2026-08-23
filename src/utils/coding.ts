@@ -1,6 +1,7 @@
 import Sign from './Sign';
 import generateRandomSigns from './generateRandomSigns';
 import GraphNode from './GraphNode';
+import { TREE_BUILDERS, type Coder } from './trees';
 import type Signs from '../interfaces/Signs';
 
 interface SerializedNode {
@@ -19,7 +20,13 @@ interface NodeCode {
     p: number;
 }
 
-class HuffmanCoding {
+/**
+ * Everything downstream of the tree - codes, average length, entropy, the
+ * bitstream - is identical whichever coder shaped it, so only the tree build
+ * differs between them.
+ */
+class SymbolCoding {
+    coder: Coder;
     initialData: Signs;
     dataSigns: Sign[];
     graphNodes: GraphNode[];
@@ -28,7 +35,8 @@ class HuffmanCoding {
     nodeCodes: NodeCode[];
     codingLength: number;
 
-    constructor(initialData: Signs = generateRandomSigns('asdasdasdasd')) {
+    constructor(initialData: Signs = generateRandomSigns('asdasdasdasd'), coder: Coder = 'huffman') {
+        this.coder = coder;
         this.initialData = initialData;
         this.dataSigns = initialData
             .signs
@@ -52,8 +60,8 @@ class HuffmanCoding {
     }
 
     /**
-     * A single distinct sign has no branch to encode, so Huffman falls back to
-     * one bit per sign. Everything else is decided by the tree walk.
+     * A single distinct sign has no branch to encode, so either coder falls back
+     * to one bit per sign. Everything else is decided by the tree walk.
      */
     addCodesToGraphNodes = (node: GraphNode, prefix: string): void => {
         const isLeaf = !node.leftLeaf && !node.rightLeaf;
@@ -143,36 +151,8 @@ class HuffmanCoding {
         return new GraphNode(sign);
     }
 
-    /**
-     * Textbook Huffman: repeatedly merge the two least probable nodes still in
-     * the queue - internal nodes included - until a single root is left.
-     */
     createGraph = (): void => {
-        const queue: GraphNode[] = this.graphNodes.slice();
-
-        while (queue.length > 1) {
-            const left = this.takeLeastProbableNode(queue);
-            const right = this.takeLeastProbableNode(queue);
-            const parentSign = new Sign('', left.sign.p + right.sign.p);
-            const parent = new GraphNode(parentSign, left, right);
-
-            left.parent = parent;
-            right.parent = parent;
-            queue.push(parent);
-        }
-
-        this.root = queue[0];
-    }
-
-    takeLeastProbableNode = (queue: GraphNode[]): GraphNode => {
-        let leastProbableIndex = 0;
-        queue.forEach( (node, index) => {
-            if (node.sign.p < queue[leastProbableIndex].sign.p) {
-                leastProbableIndex = index;
-            }
-        });
-
-        return queue.splice(leastProbableIndex, 1)[0];
+        this.root = TREE_BUILDERS[this.coder](this.graphNodes);
     }
 
     private getSignCount = (sign: string): number => {
@@ -189,4 +169,4 @@ class HuffmanCoding {
 }
 
 export type { NodeCode, SerializedNode };
-export default HuffmanCoding;
+export default SymbolCoding;

@@ -1,13 +1,15 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import HuffmanCoding from '../utils/coding';
+import SymbolCoding from '../utils/coding';
 import generateRandomSigns from '../utils/generateRandomSigns';
 import Composer from './Composer';
+import CoderSwitch from './CoderSwitch';
 import Metrics from './Metrics';
 import Codebook from './Codebook';
 import TreePanel from './TreePanel';
 import EncodedOutput from './EncodedOutput';
+import { CODERS, type Coder } from '../utils/trees';
 import ThemeToggle from './ThemeToggle';
 
 const MAX_LENGTH = 500;
@@ -16,9 +18,13 @@ const DEFAULT_TEXT = 'huffman coding turns frequent symbols into short codes';
 
 export default function Workspace() {
     const [text, setText] = useState(DEFAULT_TEXT);
+    const [coder, setCoder] = useState<Coder>('huffman');
 
     // Derived, not stored — there is no second copy of this to keep in sync.
-    const coding = useMemo(() => new HuffmanCoding(generateRandomSigns(text)), [text]);
+    const coding = useMemo(
+        () => new SymbolCoding(generateRandomSigns(text), coder),
+        [text, coder]
+    );
     const encoded = useMemo(() => coding.encode(text), [coding, text]);
 
     const originalBits = text.length * FIXED_WIDTH_BITS;
@@ -44,7 +50,10 @@ export default function Workspace() {
                     onChange={ value => setText(value.slice(0, MAX_LENGTH)) }
                 />
 
+                <CoderSwitch coder={coder} onChange={setCoder}/>
+
                 <Metrics
+                    coderLabel={CODERS[coder].label}
                     symbolCount={coding.nodeCodes.length}
                     originalBits={originalBits}
                     encodedBits={encoded.length}

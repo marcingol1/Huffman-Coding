@@ -12,6 +12,7 @@ import '@fontsource/jetbrains-mono/latin-700.css';
 import './globals.css';
 import './workspace.css';
 import '../components/Composer.css';
+import '../components/CoderSwitch.css';
 import '../components/Metrics.css';
 import '../components/Codebook.css';
 import '../components/TreePanel.css';

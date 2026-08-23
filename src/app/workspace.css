@@ -41,11 +41,6 @@
     font-size: 13.5px;
 }
 
-/* Pushes the theme control to the trailing edge without a wrapper element. */
-.app__header-inner > .theme-toggle {
-    margin-left: auto;
-    align-self: center;
-}
 
 .app__main {
     flex: 1;

@@ -5,11 +5,12 @@ import Icon from './Icon';
 import TreeScene3D from './TreeScene3D';
 import type { TreeSceneHandle } from './TreeScene3D';
 import TreeFlat from './TreeFlat';
-import type HuffmanCoding from '../utils/coding';
+import type SymbolCoding from '../utils/coding';
 import layoutTree from '../utils/layoutTree';
+import { CODERS } from '../utils/trees';
 
 interface Props {
-    coding: HuffmanCoding;
+    coding: SymbolCoding;
 }
 
 type View = 'depth' | 'flat';
@@ -35,7 +36,7 @@ export default function TreePanel({ coding }: Props) {
             <div className="panel__head">
                 <h2 className="panel__title" id="tree-title">
                     <Icon name="tree"/>
-                    Huffman tree
+                    {CODERS[coding.coder].label} tree
                 </h2>
                 <div className="tree-panel__controls">
                     {view === 'depth' && !isEmpty ? (
@@ -48,10 +49,10 @@ export default function TreePanel({ coding }: Props) {
                             Reset view
                         </button>
                     ) : null}
-                    <div className="tree-panel__toggle" role="group" aria-label="Tree view">
+                    <div className="segmented" role="group" aria-label="Tree view">
                         <button
                             type="button"
-                            className={'tree-panel__toggle-btn' + (view === 'depth' ? ' is-active' : '')}
+                            className={'segmented__btn' + (view === 'depth' ? ' is-active' : '')}
                             onClick={() => setView('depth')}
                             aria-pressed={view === 'depth'}
                             disabled={webglFailed}
@@ -60,7 +61,7 @@ export default function TreePanel({ coding }: Props) {
                         </button>
                         <button
                             type="button"
-                            className={'tree-panel__toggle-btn' + (view === 'flat' ? ' is-active' : '')}
+                            className={'segmented__btn' + (view === 'flat' ? ' is-active' : '')}
                             onClick={() => setView('flat')}
                             aria-pressed={view === 'flat'}
                         >

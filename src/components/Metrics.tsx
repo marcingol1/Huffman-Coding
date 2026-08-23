@@ -1,6 +1,7 @@
 import { formatBits, formatDecimal, formatPercent } from '../utils/format';
 
 interface Props {
+    coderLabel: string;
     symbolCount: number;
     originalBits: number;
     encodedBits: number;
@@ -19,7 +20,7 @@ interface Readout {
 const PLACEHOLDER = '—';
 
 export default function Metrics(props: Props) {
-    const { symbolCount, originalBits, encodedBits, averageLength, entropy } = props;
+    const { coderLabel, symbolCount, originalBits, encodedBits, averageLength, entropy } = props;
     const hasData = originalBits > 0;
     const saved = hasData ? (originalBits - encodedBits) / originalBits : 0;
 
@@ -38,7 +39,7 @@ export default function Metrics(props: Props) {
             hint: 'Every character stored in 8 bits.'
         },
         {
-            label: 'Huffman',
+            label: coderLabel,
             value: hasData ? formatBits(encodedBits) : PLACEHOLDER,
             unit: 'bits',
             hint: 'Length of the encoded bitstream. The codebook is not counted.'

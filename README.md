@@ -70,13 +70,26 @@ Both tree views are drawn from the same tidy layout in `src/utils/layoutTree.ts`
 — the depth view feeds it to Three.js, the flat view to hand-written SVG — so
 switching between them never moves a node.
 
-## The algorithm
+## The algorithms
 
-`src/utils/coding.ts` builds the tree the textbook way: repeatedly merge the two
-least probable nodes still in the queue — internal nodes included — until one
-root remains. Codes come from the walk down, `0` left and `1` right.
+Two coders, switchable in the page. Both produce a binary prefix code, so the
+tree view, the codebook and the bitstream are the same machinery either way —
+only `src/utils/trees.ts` differs between them.
+
+- **Huffman** builds upward: repeatedly merge the two least probable nodes still
+  in the queue, internal nodes included, until one root remains. Optimal — no
+  prefix code has a shorter weighted average.
+- **Shannon–Fano** builds downward: sort by probability, cut the list where the
+  two halves are closest in weight, give one side `0` and the other `1`, recurse.
+  Splitting top-down cannot see what a split costs further down, so it ties
+  Huffman or loses to it, never wins.
+
+The `Coder gap` sample is the smallest input where they disagree: counts
+5,2,2,2,2 cost 29 bits under Huffman and 30 under Shannon–Fano. Codes come from
+the walk down, `0` left and `1` right.
 
 Edge cases are handled rather than thrown: empty input produces an empty
 codebook, and a single distinct symbol falls back to one bit per symbol. Both are
-covered in `src/utils/coding.test.ts`, along with a check that the codebook stays
-prefix-free and never averages fewer bits per symbol than the entropy.
+covered in `src/utils/coding.test.ts` for both coders, along with checks that
+each codebook stays prefix-free, that neither averages fewer bits per symbol than
+the entropy, and that Shannon–Fano is never shorter than Huffman.

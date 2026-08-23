@@ -5,43 +5,6 @@
     flex-wrap: wrap;
 }
 
-/* Segmented control: pill outer, the active segment carries the accent. */
-.tree-panel__toggle {
-    display: inline-flex;
-    padding: 2px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--bg-sunken);
-}
-
-.tree-panel__toggle-btn {
-    min-height: 28px;
-    padding: 0 14px;
-    border: 0;
-    border-radius: 999px;
-    background: transparent;
-    color: var(--fg-muted);
-    font-family: inherit;
-    font-size: 12.5px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
-}
-
-.tree-panel__toggle-btn:hover:not(:disabled) {
-    color: var(--fg);
-}
-
-.tree-panel__toggle-btn.is-active {
-    background: var(--accent);
-    color: var(--on-accent);
-}
-
-.tree-panel__toggle-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
 .tree-panel__stage {
     height: 460px;
     min-height: 320px;

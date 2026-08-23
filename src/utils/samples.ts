@@ -21,7 +21,9 @@ const SAMPLE_GROUPS: SampleGroup[] = [
             { label: 'Sentence', value: 'huffman coding turns frequent symbols into short codes' },
             { label: 'Skewed', value: 'aaaaaaaaaaaaaaaabbbbbbbbccccdde' },
             { label: 'Even split', value: 'abcdabcdabcdabcd' },
-            { label: 'DNA', value: 'GATTACAGATTACAGGGTTTACCA' }
+            { label: 'DNA', value: 'GATTACAGATTACAGGGTTTACCA' },
+            // The smallest distribution on which Huffman and Shannon-Fano disagree.
+            { label: 'Coder gap', value: 'aaaaabbccddee' }
         ]
     },
     {
