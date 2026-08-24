@@ -65,3 +65,8 @@ export function groupBits(bits: string, size: number = 8): string[] {
     }
     return groups;
 }
+
+/** A whole span of source made visible, for the coders that emit phrases. */
+export function displayPhrase(phrase: string): string {
+    return phrase.split('').map( sign => displaySymbol(sign).glyph ).join('');
+}

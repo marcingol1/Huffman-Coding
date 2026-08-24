@@ -1,0 +1,25 @@
+/* Borrows the codebook's frame and scroll so every coder's table reads alike. */
+.detail__head {
+    font-weight: 400 !important;
+    width: 1%;
+    white-space: nowrap;
+}
+
+.detail__numeric {
+    text-align: right !important;
+    white-space: nowrap;
+}
+
+.detail__mono {
+    font-family: var(--font-mono);
+    color: var(--fg);
+    word-break: break-all;
+}
+
+th.detail__numeric {
+    color: var(--accent-ink);
+}
+
+.detail__notice {
+    margin-top: var(--space-md);
+}

@@ -25,12 +25,12 @@ export default function ThemeToggle() {
     );
 
     return (
-        <div className="theme-toggle" role="group" aria-label="Colour theme">
+        <div className="segmented theme-toggle" role="group" aria-label="Colour theme">
             {OPTIONS.map( option => (
                 <button
                     key={option.value}
                     type="button"
-                    className={'theme-toggle__btn' + (choice === option.value ? ' is-active' : '')}
+                    className={'segmented__btn' + (choice === option.value ? ' is-active' : '')}
                     onClick={() => applyTheme(option.value)}
                     aria-pressed={choice === option.value}
                 >

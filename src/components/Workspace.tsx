@@ -1,13 +1,16 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import HuffmanCoding from '../utils/coding';
-import generateRandomSigns from '../utils/generateRandomSigns';
+import encodeText from '../utils/encoding';
 import Composer from './Composer';
+import CoderSwitch from './CoderSwitch';
 import Metrics from './Metrics';
 import Codebook from './Codebook';
+import DetailTable from './DetailTable';
+import Stream from './Stream';
 import TreePanel from './TreePanel';
 import EncodedOutput from './EncodedOutput';
+import { CODERS, type Coder } from '../utils/trees';
 import ThemeToggle from './ThemeToggle';
 
 const MAX_LENGTH = 500;
@@ -16,10 +19,10 @@ const DEFAULT_TEXT = 'huffman coding turns frequent symbols into short codes';
 
 export default function Workspace() {
     const [text, setText] = useState(DEFAULT_TEXT);
+    const [coder, setCoder] = useState<Coder>('huffman');
 
     // Derived, not stored — there is no second copy of this to keep in sync.
-    const coding = useMemo(() => new HuffmanCoding(generateRandomSigns(text)), [text]);
-    const encoded = useMemo(() => coding.encode(text), [coding, text]);
+    const encoding = useMemo(() => encodeText(text, coder), [text, coder]);
 
     const originalBits = text.length * FIXED_WIDTH_BITS;
 
@@ -44,27 +47,50 @@ export default function Workspace() {
                     onChange={ value => setText(value.slice(0, MAX_LENGTH)) }
                 />
 
+                <CoderSwitch coder={coder} onChange={setCoder}/>
+
                 <Metrics
-                    symbolCount={coding.nodeCodes.length}
+                    coderLabel={CODERS[coder].label}
+                    buildsTree={CODERS[coder].buildsTree}
+                    perSymbol={CODERS[coder].perSymbol}
+                    symbolCount={encoding.symbolCount}
                     originalBits={originalBits}
-                    encodedBits={encoded.length}
-                    averageLength={coding.codingLength}
-                    entropy={coding.countGraphEntropy()}
+                    encodedBits={encoding.encoded.length}
+                    averageLength={encoding.averageLength}
+                    entropy={encoding.entropy}
                 />
 
                 <div className="app__grid">
-                    <TreePanel coding={coding}/>
+                    {encoding.tree ? (
+                        <TreePanel coding={encoding.tree}/>
+                    ) : (
+                        <Stream coding={encoding.stream!}/>
+                    )}
                     <div className="app__column">
-                        <Codebook nodeCodes={coding.nodeCodes} totalSigns={text.length}/>
-                        <EncodedOutput encoded={encoded} originalBits={originalBits}/>
+                        {encoding.tree ? (
+                            <Codebook nodeCodes={encoding.tree.nodeCodes} totalSigns={text.length}/>
+                        ) : (
+                            <DetailTable detail={encoding.stream!.detail}/>
+                        )}
+                        <EncodedOutput
+                            encoded={encoding.encoded}
+                            originalBits={originalBits}
+                        />
                     </div>
                 </div>
             </main>
 
             <footer className="app__footer">
                 <p>
-                    Codes are assigned by walking the tree: <code className="app__bit">0</code> takes
-                    the left branch, <code className="app__bit">1</code> takes the right.
+                    {CODERS[coder].buildsTree ? (
+                        <>
+                            Codes are assigned by walking the tree:{' '}
+                            <code className="app__bit">0</code> takes the left branch,{' '}
+                            <code className="app__bit">1</code> takes the right.{' '}
+                        </>
+                    ) : (
+                        <>{CODERS[coder].footer}{' '}</>
+                    )}
                     Comparison baseline is {FIXED_WIDTH_BITS} bits per character.
                 </p>
             </footer>

@@ -1,0 +1,46 @@
+/*
+ * Sits between the source and the results because it governs both: the tree,
+ * the codebook and the bitstream all change with it.
+ */
+.coder {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow-sm);
+}
+
+.coder__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg);
+}
+
+.coder__rule {
+    flex: 1;
+    min-width: 0;
+    font-size: 12.5px;
+    color: var(--fg-muted);
+}
+
+@media (max-width: 700px) {
+    .coder__rule {
+        flex-basis: 100%;
+    }
+
+    /*
+     * Six segments do not fit a phone in one pill. They wrap into a rounded
+     * block instead — the segments keep their pill shape, the container drops
+     * to the control radius so a wrapped row still looks deliberate.
+     */
+    .coder .segmented {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        border-radius: var(--radius-control);
+    }
+}
